@@ -1,10 +1,9 @@
 -- +goose Up
 CREATE TABLE users (
-	id int NOT NULL,
-	created_at text,
-	updated_at text,
-	name text,
-	PRIMARY KEY(id)
+	id INT PRIMARY KEY,
+	created_at TEXT,
+	updated_at TEXT,
+	username TEXT
 );
 
 -- +goose Down
