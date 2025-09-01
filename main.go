@@ -1,9 +1,17 @@
 package main
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/a-h/templ"
+	_ "github.com/mattn/go-sqlite3"
+
 	"www.github.com/jkboyo/votefin/internal/database"
+	"www.github.com/jkboyo/votefin/templates"
 )
 
 type apiConfig struct {
@@ -11,8 +19,26 @@ type apiConfig struct {
 }
 
 func main() {
+	db, err := sql.Open("sqlite3", "./votefin.db")
+	if err != nil {
+		fmt.Println("Error with DB", err)
+	}
+	defer db.Close()
+	dbQueries := database.New(db)
+
+	apiConf := apiConfig{db: dbQueries}
+
+	userMovies, err := apiConf.db.GetMoviesByUserVotes(context.Background(), 1)
+	if err != nil {
+		fmt.Println("couldn't fetch movies users voted on movies", err)
+	}
+	movies, err := apiConf.db.GetMovies(context.Background())
+	if err != nil {
+		fmt.Println("couldn't fetch movies", err)
+	}
 	serveMux := http.NewServeMux()
 
+	serveMux.Handle("/", templ.Handler(templates.PageTemplate(true, userMovies, movies)))
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: serveMux,
@@ -30,7 +56,7 @@ func (cfg *apiConfig) fetchMovies(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "error fetching movies")
 		return
 	}
-
+	respondWithJson(w, http.StatusAccepted, movies)
 }
 
 func respondWithJson(w http.ResponseWriter, code int, payload any) error {

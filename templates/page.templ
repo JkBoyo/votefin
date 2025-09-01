@@ -1,0 +1,253 @@
+package templates
+
+import "www.github.com/jkboyo/votefin/internal/database"
+
+templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.GetMoviesRow) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<title>Votefin</title>
+			<style>
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background-color: #121212;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: none;
+            width: 100%;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .column {
+            background: #1f1f1f;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column.votes {
+            flex: 0 0 300px; /* Fixed width for votes column */
+        }
+
+        .column.movies {
+            flex: 1; /* Takes remaining space for movie grid */
+        }
+
+        .column h2 {
+            color: #64b5f6;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #64b5f6;
+            padding-bottom: 5px;
+            flex-shrink: 0;
+        }
+
+        .item-list {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+            margin: 0;
+            padding: 10px 0 0 0; /* Add 10px padding at the top */
+        }
+
+        /* Single column layout for votes */
+        .votes .item-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Responsive grid for movies - adjusts columns based on available space */
+        .movies .item-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 140px);
+            gap: 15px;
+            justify-content: start;
+        }
+
+        .item-list li {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 140px;           /* Fixed container width */
+            height: 270px;          /* Increased height for text wrapping */
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+            border: 1px solid #404040;
+            flex-shrink: 0;         /* Prevent shrinking */
+            box-sizing: border-box; /* Include padding in dimensions */
+        }
+
+        .item-list li:hover {
+            transform: translateY(-5px);
+            background: #333333;
+            border-color: #64b5f6;
+        }
+
+        /* Image styling for both columns - now both are movies */
+        .votes .item-image,
+        .movies .item-image {
+            width: 120px;           /* Fixed width */
+            height: 180px;          /* Fixed height (2:3 ratio) */
+            object-fit: cover;
+            border: 2px solid #64b5f6;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            flex-shrink: 0;         /* Prevent shrinking */
+        }
+
+        /* Grid items for movies shouldn't have bottom margin */
+        .movies .item-list li {
+            margin-bottom: 0;
+        }
+
+        /* Left column items should still have bottom margin for vertical stacking */
+        .votes .item-list li {
+            margin-bottom: 20px;
+            width: auto;      /* Override fixed width for left column */
+            height: auto;     /* Override fixed height for left column */
+        }
+
+        .item-info h3 {
+            margin-bottom: 0;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        /* Custom scrollbar styling */
+        .column::-webkit-scrollbar,
+        .item-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .column::-webkit-scrollbar-track,
+        .item-list::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .column::-webkit-scrollbar-thumb,
+        .item-list::-webkit-scrollbar-thumb {
+            background: #64b5f6;
+            border-radius: 4px;
+        }
+
+        .column::-webkit-scrollbar-thumb:hover,
+        .item-list::-webkit-scrollbar-thumb:hover {
+            background: #42a5f5;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .flex-container {
+                flex-direction: column;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .item-image {
+                width: 100px;
+                height: 100px;
+            }
+        }
+		</style>
+		</head>
+		<body>
+			<div class="container">
+				<div class="flex-container">
+					<div class="column votes">
+						<h2>Votes</h2>
+						<ul class="item-list">
+							if len(userVotedMovies) < 1 {
+								@NoMovies()
+							} else {
+								for _, movie := range userVotedMovies {
+									@UserMovie(movie)
+								}
+							}
+						</ul>
+					</div>
+					<div class="column movies">
+						<h2>Content to Vote On</h2>
+						<ul class="item-list">
+							if len(allMovies) < 1 {
+								@NoMovies()
+							} else {
+								for _, movie := range allMovies {
+									@Movie(movie)
+								}
+							}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</body>
+	</html>
+}
+
+templ NoMovies() {
+	<li>
+		<div>
+			<h3>No Movies Available</h3>
+		</div>
+	</li>
+}
+
+templ UserMovie(movie database.GetMoviesByUserVotesRow) {
+	<li>
+		<img src={ movie.PosterUrl } alt="Upvote" class="item-image"/>
+		<div class="item-info">
+			<h3>{ movie.Title } </h3>
+		</div>
+	</li>
+}
+
+templ Movie(movie database.GetMoviesRow) {
+	<li>
+		<img src={ movie.PosterUrl } alt="Upvote" class="item-image"/>
+		<div class="item-info">
+			<h3>{ movie.Title } </h3>
+		</div>
+	</li>
+}

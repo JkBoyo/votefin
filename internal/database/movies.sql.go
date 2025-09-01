@@ -10,15 +10,16 @@ import (
 )
 
 const getMovies = `-- name: GetMovies :many
-SELECT id, title, url, poster_url, status FROM movies
+SELECT id, title, description, url, poster_url, status FROM movies
 `
 
 type GetMoviesRow struct {
-	ID        int64
-	Title     string
-	Url       string
-	PosterUrl string
-	Status    string
+	ID          int64
+	Title       string
+	Description string
+	Url         string
+	PosterUrl   string
+	Status      string
 }
 
 func (q *Queries) GetMovies(ctx context.Context) ([]GetMoviesRow, error) {
@@ -33,6 +34,7 @@ func (q *Queries) GetMovies(ctx context.Context) ([]GetMoviesRow, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Description,
 			&i.Url,
 			&i.PosterUrl,
 			&i.Status,
