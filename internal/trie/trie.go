@@ -5,6 +5,10 @@ import (
 	"maps"
 )
 
+var (
+	ErrNoMatch = errors.New("No objects in trie match")
+)
+
 type trieNode struct {
 	Children  map[rune]*trieNode
 	Id        int
@@ -37,48 +41,44 @@ func (t *Trie) Insert(obj string, id int) {
 		if exists {
 			curNode = nextNode
 		} else {
-			newNode := trieNode{
+			newNode := &trieNode{
 				Children:  map[rune]*trieNode{},
 				IsNameEnd: false,
 			}
-			curNode.Children[char] = &newNode
-			curNode = &newNode
+			curNode.Children[char] = newNode
+			curNode = newNode
 		}
 	}
-	newNode := trieNode{
-		Children:  nil,
-		Id:        id,
-		IsNameEnd: true,
-	}
-	curNode.Children[rune(0)] = &newNode
+	curNode.Id = id
+	curNode.IsNameEnd = true
 }
 
-func (t *Trie) RetrieveObjs(obj string, numRet int) ([]Obj, error) {
+func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 	curNode := t.Root
-	for _, char := range obj {
+	for _, char := range pref {
 		nextNode, exists := curNode.Children[char]
 		if !exists {
-			return []Obj{}, errors.New("No objects in trie match")
+			return []Obj{}, ErrNoMatch
 		}
 		curNode = nextNode
 	}
 	remChil := curNode.Children
 
-	objs := []Obj{}
-	return searchLevel(remChil, obj, objs, numRet), nil
+	return searchLevel(remChil, pref), nil
 }
 
-func searchLevel(currLev map[rune]*trieNode, currPrefix string, objs []Obj, numRet int) []Obj {
+func searchLevel(currLev map[rune]*trieNode, currPrefix string) []Obj {
 	keys := maps.Keys(currLev)
-	for r := range keys {
-		if len(objs) == numRet {
-			return objs
+
+	objs := []Obj{}
+
+	for k := range keys {
+		if currLev[k].IsNameEnd {
+			objs = append(objs, Obj{currPrefix + string(k), currLev[k].Id})
 		}
-		if r == rune(0) {
-			objs = append(objs, Obj{Str: currPrefix, Val: currLev[r].Id})
-			continue
+		if len(currLev[k].Children) != 0 {
+			objs = append(objs, searchLevel(currLev[k].Children, currPrefix+string(k))...)
 		}
-		objs = append(objs, searchLevel(currLev[r].Children, currPrefix+string(r), objs, numRet)...)
 	}
 	return objs
 }
