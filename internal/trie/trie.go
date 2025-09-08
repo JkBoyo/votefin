@@ -3,6 +3,7 @@ package trie
 import (
 	"errors"
 	"maps"
+	"slices"
 )
 
 var (
@@ -10,9 +11,10 @@ var (
 )
 
 type trieNode struct {
-	Children  map[rune]*trieNode
-	Id        int
-	IsNameEnd bool
+	Children   map[rune]*trieNode
+	Id         int
+	Popularity float32
+	IsNameEnd  bool
 }
 
 type Trie struct {
@@ -20,8 +22,9 @@ type Trie struct {
 }
 
 type Obj struct {
-	Str string
-	Val int
+	Str        string
+	Val        int
+	Popularity float32
 }
 
 func NewTrie() *Trie {
@@ -34,7 +37,7 @@ func NewTrie() *Trie {
 	}
 }
 
-func (t *Trie) Insert(obj string, id int) {
+func (t *Trie) Insert(obj string, id int, popularity float32) {
 	curNode := t.Root
 	for _, char := range obj {
 		nextNode, exists := curNode.Children[char]
@@ -50,6 +53,7 @@ func (t *Trie) Insert(obj string, id int) {
 		}
 	}
 	curNode.Id = id
+	curNode.Popularity = popularity
 	curNode.IsNameEnd = true
 }
 
@@ -64,7 +68,20 @@ func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 	}
 	remChil := curNode.Children
 
-	return searchLevel(remChil, pref), nil
+	retObjs := searchLevel(remChil, pref)
+	slices.SortFunc(retObjs, func(i, j Obj) int {
+		if i.Popularity > j.Popularity {
+			return -1
+		}
+		if i.Popularity < j.Popularity {
+			return 1
+		}
+		if i.Popularity == j.Popularity {
+			return 0
+		}
+		return 0
+	})
+	return retObjs, nil
 }
 
 func searchLevel(currLev map[rune]*trieNode, currPrefix string) []Obj {
@@ -74,7 +91,7 @@ func searchLevel(currLev map[rune]*trieNode, currPrefix string) []Obj {
 
 	for k := range keys {
 		if currLev[k].IsNameEnd {
-			objs = append(objs, Obj{currPrefix + string(k), currLev[k].Id})
+			objs = append(objs, Obj{currPrefix + string(k), currLev[k].Id, currLev[k].Popularity})
 		}
 		if len(currLev[k].Children) != 0 {
 			objs = append(objs, searchLevel(currLev[k].Children, currPrefix+string(k))...)

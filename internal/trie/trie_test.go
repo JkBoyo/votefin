@@ -11,14 +11,15 @@ import (
 func TestTrie(t *testing.T) {
 	testTrie := NewTrie()
 	testObjSlice := []Obj{
-		{Str: "This word is cool", Val: 123456},
-		{Str: "This sentence is different", Val: 54321},
-		{Str: "This sentence has some diff", Val: 56789},
-		{Str: "This word drools", Val: 98765},
-		{Str: "This word is happy", Val: 56466},
+		{Str: "This word is cool", Val: 123456, Popularity: 10.0},
+		{Str: "This sentence is different", Val: 54321, Popularity: 7.0},
+		{Str: "This sentence has some diff", Val: 56789, Popularity: 5.0},
+		{Str: "This sentence has some differences", Val: 3456789, Popularity: 4.0},
+		{Str: "This word drools", Val: 98765, Popularity: 3.0},
+		{Str: "This word is happy", Val: 56466, Popularity: 1.0},
 	}
 	for _, obj := range testObjSlice {
-		testTrie.Insert(obj.Str, obj.Val)
+		testTrie.Insert(obj.Str, obj.Val, obj.Popularity)
 	}
 	printTrie, err := json.MarshalIndent(testTrie, "", " ")
 	if err != nil {
@@ -34,11 +35,12 @@ func TestTrie(t *testing.T) {
 	}{
 		{
 			[]Obj{
-				{Str: "This word is cool", Val: 123456},
-				{Str: "This sentence is different", Val: 54321},
-				{Str: "This sentence has some diff", Val: 56789},
-				{Str: "This word drools", Val: 98765},
-				{Str: "This word is happy", Val: 56466},
+				{Str: "This word is cool", Val: 123456, Popularity: 10.0},
+				{Str: "This sentence is different", Val: 54321, Popularity: 7.0},
+				{Str: "This sentence has some diff", Val: 56789, Popularity: 5.0},
+				{Str: "This sentence has some differences", Val: 3456789, Popularity: 4.0},
+				{Str: "This word drools", Val: 98765, Popularity: 3.0},
+				{Str: "This word is happy", Val: 56466, Popularity: 1.0},
 			},
 			nil,
 			"All Ojbs should exist and be returned",
@@ -46,8 +48,9 @@ func TestTrie(t *testing.T) {
 		},
 		{
 			[]Obj{
-				{Str: "This sentence is different", Val: 54321},
-				{Str: "This sentence has some diff", Val: 56789},
+				{Str: "This sentence is different", Val: 54321, Popularity: 7.0},
+				{Str: "This sentence has some diff", Val: 56789, Popularity: 5.0},
+				{Str: "This sentence has some differences", Val: 3456789, Popularity: 4.0},
 			},
 			nil,
 			"Objs with 'This sentence' prefixes should be returned",
