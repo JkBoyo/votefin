@@ -37,9 +37,9 @@ func NewTrie() *Trie {
 	}
 }
 
-func (t *Trie) Insert(obj string, id int, popularity float32) {
+func (t *Trie) Insert(obj Obj) {
 	curNode := t.Root
-	for _, char := range obj {
+	for _, char := range obj.Str {
 		nextNode, exists := curNode.Children[char]
 		if exists {
 			curNode = nextNode
@@ -52,8 +52,8 @@ func (t *Trie) Insert(obj string, id int, popularity float32) {
 			curNode = newNode
 		}
 	}
-	curNode.Id = id
-	curNode.Popularity = popularity
+	curNode.Id = obj.Val
+	curNode.Popularity = obj.Popularity
 	curNode.IsNameEnd = true
 }
 
