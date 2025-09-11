@@ -146,12 +146,18 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUse
             height: auto;     /* Override fixed height for left column */
         }
 
-        .item-info h3 {
+        .item-info input {
+            margin-bottom: 0;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.3;
+        } h3 {
             margin-bottom: 0;
             color: #ffffff;
             font-size: 14px;
             line-height: 1.3;
         }
+
 
         /* Custom scrollbar styling */
         .column::-webkit-scrollbar,
@@ -210,15 +216,18 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUse
 					</div>
 					<div class="column movies">
 						<h2>Content to Vote On</h2>
-						<ul class="item-list">
-							if len(allMovies) < 1 {
-								@NoMovies()
-							} else {
-								for _, movie := range allMovies {
-									@Movie(movie)
+						<button type="button">Submit Votes</button>
+						<form>
+							<ul class="item-list">
+								if len(allMovies) < 1 {
+									@NoMovies()
+								} else {
+									for _, movie := range allMovies {
+										@Movie(movie)
+									}
 								}
-							}
-						</ul>
+							</ul>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -236,7 +245,7 @@ templ NoMovies() {
 
 templ UserMovie(movie database.GetMoviesByUserVotesRow) {
 	<li>
-		<img src={ movie.PosterUrl } alt="Upvote" class="item-image"/>
+		<img src={ movie.PosterUrl } alt={ movie.Title } class="item-image"/>
 		<div class="item-info">
 			<h3>{ movie.Title } </h3>
 		</div>
@@ -245,9 +254,10 @@ templ UserMovie(movie database.GetMoviesByUserVotesRow) {
 
 templ Movie(movie database.GetMoviesRow) {
 	<li>
-		<img src={ movie.PosterUrl } alt="Upvote" class="item-image"/>
+		<img src={ movie.PosterUrl } alt={ movie.Title } class="item-image"/>
 		<div class="item-info">
-			<h3>{ movie.Title } </h3>
+			<input type="checkbox" id={ movie.Title } value={ movie.ID }/>
+			<label for={ movie.Title }>{ movie.Title } </label>
 		</div>
 	</li>
 }

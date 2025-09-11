@@ -31,7 +31,7 @@ func PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUser
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Votefin</title><style>\n* {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #e0e0e0;\n            background-color: #121212;\n            margin: 0;\n            padding: 0;\n            height: 100vh;\n            overflow: hidden;\n        }\n\n        .container {\n            max-width: none;\n            width: 100%;\n            margin: 0;\n            padding: 20px;\n            height: 100vh;\n            display: flex;\n            flex-direction: column;\n            box-sizing: border-box;\n        }\n\n        h1 {\n            text-align: center;\n            margin-bottom: 20px;\n            color: #ffffff;\n            flex-shrink: 0;\n        }\n\n        .flex-container {\n            display: flex;\n            gap: 20px;\n            flex: 1;\n            min-height: 0;\n        }\n\n        .column {\n            background: #1f1f1f;\n            padding: 20px;\n            border-radius: 8px;\n            box-shadow: 0 2px 10px rgba(0,0,0,0.3);\n            border: 1px solid #333;\n            overflow-y: auto;\n            display: flex;\n            flex-direction: column;\n        }\n\n        .column.votes {\n            flex: 0 0 300px; /* Fixed width for votes column */\n        }\n\n        .column.movies {\n            flex: 1; /* Takes remaining space for movie grid */\n        }\n\n        .column h2 {\n            color: #64b5f6;\n            margin-bottom: 15px;\n            border-bottom: 2px solid #64b5f6;\n            padding-bottom: 5px;\n            flex-shrink: 0;\n        }\n\n        .item-list {\n            list-style: none;\n            flex: 1;\n            overflow-y: auto;\n            margin: 0;\n            padding: 10px 0 0 0; /* Add 10px padding at the top */\n        }\n\n        /* Single column layout for votes */\n        .votes .item-list {\n            display: flex;\n            flex-direction: column;\n        }\n\n        /* Responsive grid for movies - adjusts columns based on available space */\n        .movies .item-list {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, 140px);\n            gap: 15px;\n            justify-content: start;\n        }\n\n        .item-list li {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            text-align: center;\n            width: 140px;           /* Fixed container width */\n            height: 270px;          /* Increased height for text wrapping */\n            padding: 15px;\n            background: #2a2a2a;\n            border-radius: 8px;\n            transition: transform 0.2s ease;\n            border: 1px solid #404040;\n            flex-shrink: 0;         /* Prevent shrinking */\n            box-sizing: border-box; /* Include padding in dimensions */\n        }\n\n        .item-list li:hover {\n            transform: translateY(-5px);\n            background: #333333;\n            border-color: #64b5f6;\n        }\n\n        /* Image styling for both columns - now both are movies */\n        .votes .item-image,\n        .movies .item-image {\n            width: 120px;           /* Fixed width */\n            height: 180px;          /* Fixed height (2:3 ratio) */\n            object-fit: cover;\n            border: 2px solid #64b5f6;\n            border-radius: 4px;\n            margin-bottom: 10px;\n            flex-shrink: 0;         /* Prevent shrinking */\n        }\n\n        /* Grid items for movies shouldn't have bottom margin */\n        .movies .item-list li {\n            margin-bottom: 0;\n        }\n\n        /* Left column items should still have bottom margin for vertical stacking */\n        .votes .item-list li {\n            margin-bottom: 20px;\n            width: auto;      /* Override fixed width for left column */\n            height: auto;     /* Override fixed height for left column */\n        }\n\n        .item-info h3 {\n            margin-bottom: 0;\n            color: #ffffff;\n            font-size: 14px;\n            line-height: 1.3;\n        }\n\n        /* Custom scrollbar styling */\n        .column::-webkit-scrollbar,\n        .item-list::-webkit-scrollbar {\n            width: 8px;\n        }\n\n        .column::-webkit-scrollbar-track,\n        .item-list::-webkit-scrollbar-track {\n            background: #333;\n            border-radius: 4px;\n        }\n\n        .column::-webkit-scrollbar-thumb,\n        .item-list::-webkit-scrollbar-thumb {\n            background: #64b5f6;\n            border-radius: 4px;\n        }\n\n        .column::-webkit-scrollbar-thumb:hover,\n        .item-list::-webkit-scrollbar-thumb:hover {\n            background: #42a5f5;\n        }\n\n        /* Responsive design */\n        @media (max-width: 768px) {\n            .flex-container {\n                flex-direction: column;\n            }\n            \n            .grid-container {\n                grid-template-columns: 1fr;\n            }\n            \n            .item-image {\n                width: 100px;\n                height: 100px;\n            }\n        }\n\t\t</style></head><body><div class=\"container\"><div class=\"flex-container\"><div class=\"column votes\"><h2>Votes</h2><ul class=\"item-list\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Votefin</title><style>\n* {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #e0e0e0;\n            background-color: #121212;\n            margin: 0;\n            padding: 0;\n            height: 100vh;\n            overflow: hidden;\n        }\n\n        .container {\n            max-width: none;\n            width: 100%;\n            margin: 0;\n            padding: 20px;\n            height: 100vh;\n            display: flex;\n            flex-direction: column;\n            box-sizing: border-box;\n        }\n\n        h1 {\n            text-align: center;\n            margin-bottom: 20px;\n            color: #ffffff;\n            flex-shrink: 0;\n        }\n\n        .flex-container {\n            display: flex;\n            gap: 20px;\n            flex: 1;\n            min-height: 0;\n        }\n\n        .column {\n            background: #1f1f1f;\n            padding: 20px;\n            border-radius: 8px;\n            box-shadow: 0 2px 10px rgba(0,0,0,0.3);\n            border: 1px solid #333;\n            overflow-y: auto;\n            display: flex;\n            flex-direction: column;\n        }\n\n        .column.votes {\n            flex: 0 0 300px; /* Fixed width for votes column */\n        }\n\n        .column.movies {\n            flex: 1; /* Takes remaining space for movie grid */\n        }\n\n        .column h2 {\n            color: #64b5f6;\n            margin-bottom: 15px;\n            border-bottom: 2px solid #64b5f6;\n            padding-bottom: 5px;\n            flex-shrink: 0;\n        }\n\n        .item-list {\n            list-style: none;\n            flex: 1;\n            overflow-y: auto;\n            margin: 0;\n            padding: 10px 0 0 0; /* Add 10px padding at the top */\n        }\n\n        /* Single column layout for votes */\n        .votes .item-list {\n            display: flex;\n            flex-direction: column;\n        }\n\n        /* Responsive grid for movies - adjusts columns based on available space */\n        .movies .item-list {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, 140px);\n            gap: 15px;\n            justify-content: start;\n        }\n\n        .item-list li {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            text-align: center;\n            width: 140px;           /* Fixed container width */\n            height: 270px;          /* Increased height for text wrapping */\n            padding: 15px;\n            background: #2a2a2a;\n            border-radius: 8px;\n            transition: transform 0.2s ease;\n            border: 1px solid #404040;\n            flex-shrink: 0;         /* Prevent shrinking */\n            box-sizing: border-box; /* Include padding in dimensions */\n        }\n\n        .item-list li:hover {\n            transform: translateY(-5px);\n            background: #333333;\n            border-color: #64b5f6;\n        }\n\n        /* Image styling for both columns - now both are movies */\n        .votes .item-image,\n        .movies .item-image {\n            width: 120px;           /* Fixed width */\n            height: 180px;          /* Fixed height (2:3 ratio) */\n            object-fit: cover;\n            border: 2px solid #64b5f6;\n            border-radius: 4px;\n            margin-bottom: 10px;\n            flex-shrink: 0;         /* Prevent shrinking */\n        }\n\n        /* Grid items for movies shouldn't have bottom margin */\n        .movies .item-list li {\n            margin-bottom: 0;\n        }\n\n        /* Left column items should still have bottom margin for vertical stacking */\n        .votes .item-list li {\n            margin-bottom: 20px;\n            width: auto;      /* Override fixed width for left column */\n            height: auto;     /* Override fixed height for left column */\n        }\n\n        .item-info input {\n            margin-bottom: 0;\n            color: #ffffff;\n            font-size: 14px;\n            line-height: 1.3;\n        }\n\n        /* Custom scrollbar styling */\n        .column::-webkit-scrollbar,\n        .item-list::-webkit-scrollbar {\n            width: 8px;\n        }\n\n        .column::-webkit-scrollbar-track,\n        .item-list::-webkit-scrollbar-track {\n            background: #333;\n            border-radius: 4px;\n        }\n\n        .column::-webkit-scrollbar-thumb,\n        .item-list::-webkit-scrollbar-thumb {\n            background: #64b5f6;\n            border-radius: 4px;\n        }\n\n        .column::-webkit-scrollbar-thumb:hover,\n        .item-list::-webkit-scrollbar-thumb:hover {\n            background: #42a5f5;\n        }\n\n        /* Responsive design */\n        @media (max-width: 768px) {\n            .flex-container {\n                flex-direction: column;\n            }\n            \n            .grid-container {\n                grid-template-columns: 1fr;\n            }\n            \n            .item-image {\n                width: 100px;\n                height: 100px;\n            }\n        }\n\t\t</style></head><body><div class=\"container\"><div class=\"flex-container\"><div class=\"column votes\"><h2>Votes</h2><button type=\"button\">Submit Votes</button><ul class=\"item-list\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -48,7 +48,7 @@ func PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUser
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></div><div class=\"column movies\"><h2>Content to Vote On</h2><ul class=\"item-list\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></div><div class=\"column movies\"><h2>Content to Vote On</h2><button type=\"button\">Submit Votes</button><ul class=\"item-list\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -130,26 +130,78 @@ func UserMovie(movie database.GetMoviesByUserVotesRow) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(movie.PosterUrl)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 239, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 241, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" alt=\"Upvote\" class=\"item-image\"><div class=\"item-info\"><h3>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" alt=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 241, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 241, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</h3></div></li>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"item-image\"><div class=\"item-info\"><input type=\"checkbox\" id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 string
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 243, Col: 42}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(movie.ID)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 243, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"> <label for=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 244, Col: 27}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 244, Col: 43}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</label></div></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -173,38 +225,90 @@ func Movie(movie database.GetMoviesRow) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var6 == nil {
-			templ_7745c5c3_Var6 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<li><img src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<li><img src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(movie.PosterUrl)
+		var templ_7745c5c3_Var11 string
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(movie.PosterUrl)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 248, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 251, Col: 28}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" alt=\"Upvote\" class=\"item-image\"><div class=\"item-info\"><h3>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 250, Col: 20}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" alt=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h3></div></li>")
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 251, Col: 48}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"item-image\"><div class=\"item-info\"><input type=\"checkbox\" id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 253, Col: 42}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var14 string
+		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(movie.ID)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 253, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"> <label for=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var15 string
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 254, Col: 27}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var16 string
+		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(movie.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 254, Col: 43}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</label></div></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

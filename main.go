@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -50,26 +49,27 @@ func (cfg *apiConfig) login(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (cfg *apiConfig) fetchMovies(w http.ResponseWriter, r *http.Request) {
-	movies, err := cfg.db.GetMovies(r.Context())
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "error fetching movies")
-		return
-	}
-	respondWithJson(w, http.StatusAccepted, movies)
-}
-
-func respondWithJson(w http.ResponseWriter, code int, payload any) error {
-	response, err := json.Marshal(payload)
-	if err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-	return nil
-}
-
-func respondWithError(w http.ResponseWriter, code int, msg string) error {
-	return respondWithJson(w, code, map[string]string{"error": msg})
-}
+// I don't think that i will need this but if I change my mind it's here.
+// func (cfg *apiConfig) fetchMovies(w http.ResponseWriter, r *http.Request) {
+// 	movies, err := cfg.db.GetMovies(r.Context())
+// 	if err != nil {
+// 		respondWithError(w, http.StatusInternalServerError, "error fetching movies")
+// 		return
+// 	}
+// 	respondWithJson(w, http.StatusAccepted, movies)
+// }
+//
+// func respondWithJson(w http.ResponseWriter, code int, payload any) error {
+// 	response, err := json.Marshal(payload)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(code)
+// 	w.Write(response)
+// 	return nil
+// }
+//
+// func respondWithError(w http.ResponseWriter, code int, msg string) error {
+// 	return respondWithJson(w, code, map[string]string{"error": msg})
+// }

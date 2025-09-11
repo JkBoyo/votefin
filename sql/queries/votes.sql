@@ -4,7 +4,7 @@ VALUES (?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetMoviesByUserVotes :many
-SELECT m.title, m.description, m.url, m.poster_url, m.status
+SELECT m.id, m.title, m.description, m.url, m.poster_url, m.status
 FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 WHERE v.user_id = ?;

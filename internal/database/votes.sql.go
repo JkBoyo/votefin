@@ -41,13 +41,14 @@ func (q *Queries) CreateVote(ctx context.Context, arg CreateVoteParams) (Vote, e
 }
 
 const getMoviesByUserVotes = `-- name: GetMoviesByUserVotes :many
-SELECT m.title, m.description, m.url, m.poster_url, m.status
+SELECT m.id, m.title, m.description, m.url, m.poster_url, m.status
 FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 WHERE v.user_id = ?
 `
 
 type GetMoviesByUserVotesRow struct {
+	ID          int64
 	Title       string
 	Description string
 	Url         string
@@ -65,6 +66,7 @@ func (q *Queries) GetMoviesByUserVotes(ctx context.Context, userID int64) ([]Get
 	for rows.Next() {
 		var i GetMoviesByUserVotesRow
 		if err := rows.Scan(
+			&i.ID,
 			&i.Title,
 			&i.Description,
 			&i.Url,
