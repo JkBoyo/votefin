@@ -8,42 +8,39 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUse
 		<head>
 			<meta charset="UTF-8"/>
 			<title>Votefin</title>
-			<style>
-
-			</style>
+			<link rel="stylesheet" type="text/css" href="./static/main.css"/>
 		</head>
+		<header>Votefin</header>
 		<body>
-			<div class="">
+			<div class="pageGridCont">
+				<div class="">
+					<h2>Votes</h2>
+					<ul class="">
+						if len(userVotedMovies) < 1 {
+							@NoMovies()
+						} else {
+							for _, movie := range userVotedMovies {
+								@UserMovie(movie)
+							}
+						}
+					</ul>
+				</div>
 				<div class="">
 					<div class="">
-						<h2>Votes</h2>
+						<h2>Content to Vote On</h2>
+						<button id="" type="button">Submit Votes</button>
+					</div>
+					<form hx-post="/vote">
 						<ul class="">
-							if len(userVotedMovies) < 1 {
+							if len(allMovies) < 1 {
 								@NoMovies()
 							} else {
-								for _, movie := range userVotedMovies {
-									@UserMovie(movie)
+								for _, movie := range allMovies {
+									@Movie(movie)
 								}
 							}
 						</ul>
-					</div>
-					<div class="">
-						<div class="">
-							<h2>Content to Vote On</h2>
-							<button id="" type="button">Submit Votes</button>
-						</div>
-						<form hx-post="/vote">
-							<ul class="">
-								if len(allMovies) < 1 {
-									@NoMovies()
-								} else {
-									for _, movie := range allMovies {
-										@Movie(movie)
-									}
-								}
-							</ul>
-						</form>
-					</div>
+					</form>
 				</div>
 			</div>
 		</body>

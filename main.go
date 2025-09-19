@@ -37,6 +37,9 @@ func main() {
 	}
 	serveMux := http.NewServeMux()
 
+	assets := http.FileServer(http.Dir("./assets/static/"))
+
+	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 	serveMux.Handle("/", templ.Handler(templates.PageTemplate(true, userMovies, movies)))
 	server := http.Server{
 		Addr:    ":8080",
