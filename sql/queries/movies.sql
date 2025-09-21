@@ -1,9 +1,9 @@
 -- name: GetMovies :many
-SELECT id, title, description, url, poster_url, status FROM movies;
+SELECT id, created_at, updated_at, title, tmdb_url, poster_path, status FROM movies;
 
 -- name: InsertMovie :one
-INSERT INTO movies (id, created_at, updated_at, title, description, url, poster_url, status)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO movies (id, title, tmdb_url, poster_path, status )
+VALUES (?, ?, ?, ?, ?)
 RETURNING *;
 
 

@@ -10,33 +10,25 @@ import (
 )
 
 const getMovies = `-- name: GetMovies :many
-SELECT id, title, description, url, poster_url, status FROM movies
+SELECT id, created_at, updated_at, title, tmdb_url, poster_path, status FROM movies
 `
 
-type GetMoviesRow struct {
-	ID          int64
-	Title       string
-	Description string
-	Url         string
-	PosterUrl   string
-	Status      string
-}
-
-func (q *Queries) GetMovies(ctx context.Context) ([]GetMoviesRow, error) {
+func (q *Queries) GetMovies(ctx context.Context) ([]Movie, error) {
 	rows, err := q.db.QueryContext(ctx, getMovies)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetMoviesRow
+	var items []Movie
 	for rows.Next() {
-		var i GetMoviesRow
+		var i Movie
 		if err := rows.Scan(
 			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.Title,
-			&i.Description,
-			&i.Url,
-			&i.PosterUrl,
+			&i.TmdbUrl,
+			&i.PosterPath,
 			&i.Status,
 		); err != nil {
 			return nil, err
@@ -53,31 +45,25 @@ func (q *Queries) GetMovies(ctx context.Context) ([]GetMoviesRow, error) {
 }
 
 const insertMovie = `-- name: InsertMovie :one
-INSERT INTO movies (id, created_at, updated_at, title, description, url, poster_url, status)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-RETURNING id, created_at, updated_at, title, description, url, poster_url, status
+INSERT INTO movies (id, title, tmdb_url, poster_path, status )
+VALUES (?, ?, ?, ?, ?)
+RETURNING id, created_at, updated_at, title, tmdb_url, poster_path, status
 `
 
 type InsertMovieParams struct {
-	ID          int64
-	CreatedAt   string
-	UpdatedAt   string
-	Title       string
-	Description string
-	Url         string
-	PosterUrl   string
-	Status      string
+	ID         int64
+	Title      string
+	TmdbUrl    string
+	PosterPath string
+	Status     string
 }
 
 func (q *Queries) InsertMovie(ctx context.Context, arg InsertMovieParams) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, insertMovie,
 		arg.ID,
-		arg.CreatedAt,
-		arg.UpdatedAt,
 		arg.Title,
-		arg.Description,
-		arg.Url,
-		arg.PosterUrl,
+		arg.TmdbUrl,
+		arg.PosterPath,
 		arg.Status,
 	)
 	var i Movie
@@ -86,9 +72,8 @@ func (q *Queries) InsertMovie(ctx context.Context, arg InsertMovieParams) (Movie
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Title,
-		&i.Description,
-		&i.Url,
-		&i.PosterUrl,
+		&i.TmdbUrl,
+		&i.PosterPath,
 		&i.Status,
 	)
 	return i, err

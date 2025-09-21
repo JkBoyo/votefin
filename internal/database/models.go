@@ -9,14 +9,13 @@ import (
 )
 
 type Movie struct {
-	ID          int64
-	CreatedAt   string
-	UpdatedAt   string
-	Title       string
-	Description string
-	Url         string
-	PosterUrl   string
-	Status      string
+	ID         int64
+	CreatedAt  string
+	UpdatedAt  string
+	Title      string
+	TmdbUrl    string
+	PosterPath string
+	Status     string
 }
 
 type User struct {
