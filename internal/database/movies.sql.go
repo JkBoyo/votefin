@@ -45,13 +45,15 @@ func (q *Queries) GetMovies(ctx context.Context) ([]Movie, error) {
 }
 
 const insertMovie = `-- name: InsertMovie :one
-INSERT INTO movies (id, title, tmdb_url, poster_path, status )
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO movies (id, created_at, updated_at, title, tmdb_url, poster_path, status )
+VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING id, created_at, updated_at, title, tmdb_url, poster_path, status
 `
 
 type InsertMovieParams struct {
 	ID         int64
+	CreatedAt  string
+	UpdatedAt  string
 	Title      string
 	TmdbUrl    string
 	PosterPath string
@@ -61,6 +63,8 @@ type InsertMovieParams struct {
 func (q *Queries) InsertMovie(ctx context.Context, arg InsertMovieParams) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, insertMovie,
 		arg.ID,
+		arg.CreatedAt,
+		arg.UpdatedAt,
 		arg.Title,
 		arg.TmdbUrl,
 		arg.PosterPath,

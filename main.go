@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/a-h/templ"
+	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 
 	"www.github.com/jkboyo/votefin/internal/database"
@@ -18,6 +19,7 @@ type apiConfig struct {
 }
 
 func main() {
+	godotenv.Load()
 	db, err := sql.Open("sqlite3", "./votefin.db")
 	if err != nil {
 		fmt.Println("Error with DB", err)
