@@ -2,8 +2,7 @@ package templates
 
 import "www.github.com/jkboyo/votefin/internal/database"
 
-templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.GetMoviesRow) {
-	<!DOCTYPE html>
+templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
@@ -61,19 +60,21 @@ templ NoMovies() {
 
 templ UserMovie(movie database.GetMoviesByUserVotesRow) {
 	<li>
-		<img src={ movie.PosterUrl } alt={ movie.Title } class=""/>
+		<img src={ movie.PosterPath } alt={ movie.Title } class=""/>
 		<div class="">
 			<h3>{ movie.Title } </h3>
 		</div>
 	</li>
 }
 
-templ Movie(movie database.GetMoviesRow) {
+templ Movie(movie database.Movie) {
 	<li>
-		<img src={ movie.PosterUrl } alt={ movie.Title } class=""/>
 		<div class="">
-			<input type="checkbox" id={ movie.Title } value={ movie.ID }/>
-			<label for={ movie.Title }>{ movie.Title } </label>
+			<a href={ movie.TmdbUrl }>
+				<img src={ movie.PosterPath } alt={ movie.Title } class=""/>
+				<label for={ movie.Title }>{ movie.Title } </label>
+			</a>
 		</div>
+		<input type="checkbox" id={ movie.Title } value={ movie.ID }/>
 	</li>
 }

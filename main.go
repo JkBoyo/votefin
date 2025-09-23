@@ -47,6 +47,7 @@ func main() {
 		Addr:    ":8080",
 		Handler: serveMux,
 	}
+	fmt.Println("Serving at http://localhost:8080")
 	server.ListenAndServe()
 }
 
