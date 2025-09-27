@@ -55,6 +55,13 @@ func (cfg *apiConfig) login(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func respondWithHTMLNotif(w http.ResponseWriter, code int, notif any) error {
+	w.Header().Set("Content-Type", "application-/x-www-form-urlencoded")
+	w.WriteHeader(code)
+	templates.
+	return nil
+}
+
 // I don't think that i will need this but if I change my mind it's here.
 // func (cfg *apiConfig) fetchMovies(w http.ResponseWriter, r *http.Request) {
 // 	movies, err := cfg.db.GetMovies(r.Context())

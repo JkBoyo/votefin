@@ -23,7 +23,7 @@ type tmdbData struct {
 	PosterPath string `json:"images"`
 }
 
-func fetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
+func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
 	now := time.Now().Local().GoString()
 	infoReq, err := http.NewRequest("GET", fmt.Sprintf("https://api.%s3/movie/%d", TMDBBaseURL, tmdbID), nil)
 	if err != nil {
