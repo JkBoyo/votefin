@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
@@ -19,7 +21,11 @@ type apiConfig struct {
 }
 
 func main() {
-	godotenv.Load()
+	err := godotenv.Load(".env")
+	fmt.Println(os.Getenv("TMDB_API_KEY"))
+	if err != nil {
+		log.Fatal(".env not loading")
+	}
 	db, err := sql.Open("sqlite3", "./votefin.db")
 	if err != nil {
 		fmt.Println("Error with DB", err)
@@ -41,6 +47,7 @@ func main() {
 
 	assets := http.FileServer(http.Dir("./assets/static/"))
 
+	serveMux.HandleFunc("POST /addmovie/", apiConf.addMovieHandler)
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 	serveMux.Handle("/", templ.Handler(templates.PageTemplate(true, userMovies, movies)))
 	server := http.Server{
@@ -55,10 +62,14 @@ func (cfg *apiConfig) login(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func respondWithHTMLNotif(w http.ResponseWriter, code int, notif any) error {
+func respondWithHTMLNotif(w http.ResponseWriter, r *http.Request, code int, notif string) error {
 	w.Header().Set("Content-Type", "application-/x-www-form-urlencoded")
 	w.WriteHeader(code)
-	templates.
+	html := templates.Notification(notif)
+	err := html.Render(r.Context(), w)
+	if err != nil {
+		// TODO: Handle html rendering error
+	}
 	return nil
 }
 

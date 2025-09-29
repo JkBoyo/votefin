@@ -19,7 +19,7 @@ func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Error parsing int passed in. \nText passed in%s\nError: %v", movieIDStr, err)
 	}
-	fmt.Printf("Adding movie with ID %d", movieID)
+	fmt.Printf("Adding movie with ID %d\n", movieID)
 
 	movieData, err := tmdb.FetchMovieInfo(movieID)
 	if err != nil {
@@ -31,4 +31,7 @@ func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
 		// TODO: Handle db insertion error.
 	}
 
+	response := fmt.Sprintf("Successfully added %s for voting", movie.Title)
+
+	respondWithHTMLNotif(w, r, 200, response)
 }
