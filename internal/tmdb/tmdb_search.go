@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func initTMDBTrie() (*trie.Trie, error) {
+func InitTMDBTrie() (*trie.Trie, error) {
 	tmdbTrie := trie.NewTrie()
 
 	err := godotenv.Load()

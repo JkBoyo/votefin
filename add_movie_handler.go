@@ -9,12 +9,25 @@ import (
 	"www.github.com/jkboyo/votefin/internal/tmdb"
 )
 
+func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println("Error parsing forms")
+	}
+	moviePrefix := r.FormValue("moviePrefix")
+
+	tmdbTrie, err := tmdb.InitTMDBTrie()
+
+	currentMatches, err := tmdbTrie.RetrieveObjs(moviePrefix)
+
+}
+
 func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
-	movieIDStr := r.FormValue("movieID")
 	if err != nil {
-		//TODO handle error
+		fmt.Println("Error parsing forms")
 	}
+	movieIDStr := r.FormValue("movieID")
 
 	movieID, err := strconv.ParseInt(movieIDStr, 10, 64)
 	if err != nil {
