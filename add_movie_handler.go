@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -23,12 +24,12 @@ func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
 
 	movieData, err := tmdb.FetchMovieInfo(movieID)
 	if err != nil {
-		// TODO: Handle fetch movie info error
+		log.Fatal(err)
 	}
 
 	movie, err := cfg.db.InsertMovie(r.Context(), movieData)
 	if err != nil {
-		// TODO: Handle db insertion error.
+		log.Fatal(err)
 	}
 
 	response := fmt.Sprintf("Successfully added %s for voting", movie.Title)

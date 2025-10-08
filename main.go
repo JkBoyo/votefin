@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
@@ -22,7 +21,6 @@ type apiConfig struct {
 
 func main() {
 	err := godotenv.Load(".env")
-	fmt.Println(os.Getenv("TMDB_API_KEY"))
 	if err != nil {
 		log.Fatal(".env not loading")
 	}

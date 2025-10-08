@@ -1,6 +1,7 @@
 package templates
 
 import "www.github.com/jkboyo/votefin/internal/database"
+import "fmt"
 
 templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<html lang="en">
@@ -71,7 +72,7 @@ templ Movie(movie database.Movie) {
 	<li>
 		<div class="">
 			<a href={ movie.TmdbUrl }>
-				<img src={ movie.PosterPath } alt={ movie.Title } class=""/>
+				<img src={ fmt.Sprintf("/static/images%s", movie.PosterPath) } alt={ movie.Title } class=""/>
 				<label for={ movie.Title }>{ movie.Title } </label>
 			</a>
 		</div>

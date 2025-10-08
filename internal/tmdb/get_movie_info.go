@@ -13,12 +13,12 @@ import (
 )
 
 var TMDBBaseURL = "themoviedb.org/"
-var TMDBImageBaseUrl = "https://imgage.themoviedb.org/t/p/w342%s"
+var TMDBImageBaseUrl = "https://image.tmdb.org/t/p/w342%s"
 
 type tmdbData struct {
 	ID         int64  `json:"id"`
 	Title      string `json:"title"`
-	PosterPath string `json:"images"`
+	PosterPath string `json:"poster_path"`
 }
 
 func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
@@ -29,7 +29,6 @@ func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
 	if err != nil {
 		return database.InsertMovieParams{}, fmt.Errorf("Movie request failed with error: %v\n", err)
 	}
-	fmt.Println(authHeader)
 	infoReq.Header.Add("Authorization", authHeader)
 
 	resp, err := http.DefaultClient.Do(infoReq)
@@ -59,12 +58,12 @@ func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
 		CreatedAt:  now,
 		UpdatedAt:  now,
 		Title:      data.Title,
-		TmdbUrl:    fmt.Sprintf("https://www.%s/%d", TMDBBaseURL, data.ID),
+		TmdbUrl:    fmt.Sprintf("https://www.%smovie/%d", TMDBBaseURL, data.ID),
 		PosterPath: data.PosterPath,
 		Status:     "Not ripped.",
 	}
 
-	fmt.Println(retData.PosterPath)
+	fmt.Println(retData)
 	writeImageToDisk(retData.PosterPath)
 
 	return retData, nil
@@ -79,15 +78,18 @@ func writeImageToDisk(pp string) {
 
 	resp, err := http.DefaultClient.Get(imageUrl)
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 	}
 
 	dat, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Print(err)
 	}
-	err = os.WriteFile(pp, dat, 0775)
+
+	posterFP := fmt.Sprintf("./assets/static/images%s", pp)
+	err = os.WriteFile(posterFP, dat, 0644)
 	if err != nil {
 		log.Print(err)
+		fmt.Println("file not written")
 	}
 }
