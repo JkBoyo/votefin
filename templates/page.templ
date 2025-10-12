@@ -3,11 +3,12 @@ package templates
 import "www.github.com/jkboyo/votefin/internal/database"
 import "fmt"
 
-templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
+templ PageTemplate(authenticated bool, userVotedMovies []database.Movie, allMovies []database.Movie) {
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<title>Votefin</title>
+			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
 			<link rel="stylesheet" type="text/css" href="./static/main.css"/>
 		</head>
 		<header>Votefin</header>
@@ -15,36 +16,32 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.GetMoviesByUse
 			<div class="pageGridCont">
 				<div class="">
 					<h2>Votes</h2>
-					<ul class="">
-						if len(userVotedMovies) < 1 {
-							@NoMovies()
-						} else {
-							for _, movie := range userVotedMovies {
-								@UserMovie(movie)
-							}
-						}
-					</ul>
+					@MovieList(userVotedMovies)
 				</div>
+			</div>
+			<div class="">
 				<div class="">
-					<div class="">
-						<h2>Content to Vote On</h2>
-						<button id="" type="button">Submit Votes</button>
-					</div>
-					<form hx-post="/vote">
-						<ul class="">
-							if len(allMovies) < 1 {
-								@NoMovies()
-							} else {
-								for _, movie := range allMovies {
-									@Movie(movie)
-								}
-							}
-						</ul>
-					</form>
+					<h2>Content to Vote On</h2>
+					<button id="" type="button">Submit Votes</button>
 				</div>
+				<form hx-post="/vote">
+					@MovieList(allMovies)
+				</form>
 			</div>
 		</body>
 	</html>
+}
+
+templ MovieList(allMovies []database.Movie) {
+	<ul class="">
+		if len(allMovies) < 1 {
+			@NoMovies()
+		} else {
+			for _, movie := range allMovies {
+				@Movie(movie)
+			}
+		}
+	</ul>
 }
 
 css moviesContainer() {
@@ -55,15 +52,6 @@ templ NoMovies() {
 	<li>
 		<div>
 			<h3>No Movies Available</h3>
-		</div>
-	</li>
-}
-
-templ UserMovie(movie database.GetMoviesByUserVotesRow) {
-	<li>
-		<img src={ movie.PosterPath } alt={ movie.Title } class=""/>
-		<div class="">
-			<h3>{ movie.Title } </h3>
 		</div>
 	</li>
 }

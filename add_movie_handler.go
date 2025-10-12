@@ -14,11 +14,11 @@ func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		fmt.Println("Error parsing forms")
 	}
-	moviePrefix := r.FormValue("moviePrefix")
+	//moviePrefix := r.FormValue("moviePrefix")
 
-	tmdbTrie, err := tmdb.InitTMDBTrie()
+	//tmdbTrie, err := tmdb.InitTMDBTrie()
 
-	currentMatches, err := tmdbTrie.RetrieveObjs(moviePrefix)
+	//currentMatches, err := tmdbTrie.RetrieveObjs(moviePrefix)
 
 }
 
