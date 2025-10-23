@@ -56,6 +56,11 @@ func main() {
 	}
 	serveMux := http.NewServeMux()
 
+	imagesFP := "./assets/static/images/"
+	if _, err := os.Stat(imagesFP); os.IsNotExist(err) {
+		os.Mkdir(imagesFP, 775)
+	}
+
 	assets := http.FileServer(http.Dir("./assets/static/"))
 
 	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
