@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"www.github.com/jkboyo/votefin/internal/tmdb"
+	"www.github.com/jkboyo/votefin/templates"
 )
 
 func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) {
@@ -14,12 +15,35 @@ func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		fmt.Println("Error parsing forms")
 	}
-	//moviePrefix := r.FormValue("moviePrefix")
 
-	//tmdbTrie, err := tmdb.InitTMDBTrie()
+	fmt.Println(r.Form)
+	moviePrefix := r.FormValue("searchMovies")
 
-	//currentMatches, err := tmdbTrie.RetrieveObjs(moviePrefix)
+	tmdbTrie := cfg.tmdbTrie
 
+	if err != nil {
+		fmt.Println(err.Error())
+		respondWithHtmlErr(w, 500, err.Error())
+	}
+
+	fmt.Println(moviePrefix)
+
+	currentMatches, err := tmdbTrie.RetrieveObjs(moviePrefix)
+	if err != nil {
+		fmt.Println(err.Error())
+		respondWithHtmlErr(w, 500, err.Error())
+	}
+
+	numRet := min(5, len(currentMatches))
+
+	fmt.Println(numRet)
+
+	fmt.Println(currentMatches[0:numRet])
+	retMovies := templates.SearchList(currentMatches[0:numRet])
+
+	fmt.Println(retMovies)
+
+	respondWithHTML(w, 200, retMovies)
 }
 
 func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +69,11 @@ func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	response := fmt.Sprintf("Successfully added %s for voting", movie.Title)
+	resStr := fmt.Sprintf("Successfully added %s for voting", movie.Title)
 
-	respondWithHTMLNotif(w, r, 200, response)
+	notif := templates.Notification(resStr)
+
+	fmt.Println(notif)
+
+	respondWithHTML(w, 200, notif)
 }

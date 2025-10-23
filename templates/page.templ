@@ -18,15 +18,21 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.Movie, allMovi
 					<h2>Votes</h2>
 					@MovieList(userVotedMovies)
 				</div>
-			</div>
-			<div class="">
-				<div class="">
+				<div>
+					<input
+						name="searchMovies"
+						type="text"
+						placeholder="Search movies to add"
+						hx-post="/searchmovies"
+						hx-target="#foundMovies"
+					/>
+					<div id="foundMovies"></div>
 					<h2>Content to Vote On</h2>
 					<button id="" type="button">Submit Votes</button>
+					<form hx-post="/vote">
+						@MovieList(allMovies)
+					</form>
 				</div>
-				<form hx-post="/vote">
-					@MovieList(allMovies)
-				</form>
 			</div>
 		</body>
 	</html>
@@ -42,10 +48,6 @@ templ MovieList(allMovies []database.Movie) {
 			}
 		}
 	</ul>
-}
-
-css moviesContainer() {
-	display: grid;
 }
 
 templ NoMovies() {

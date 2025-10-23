@@ -1,0 +1,11 @@
+package templates
+
+import "www.github.com/jkboyo/votefin/internal/trie"
+
+templ SearchList(retMovies []trie.Obj) {
+	<ul>
+		for _, obj := range retMovies {
+			<li>{ obj.Str }</li>
+		}
+	</ul>
+}

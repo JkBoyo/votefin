@@ -66,35 +66,27 @@ func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 		}
 		curNode = nextNode
 	}
-	remChil := curNode.Children
 
-	retObjs := searchLevel(remChil, pref)
+	retObjs := searchLevel(curNode, pref)
+
 	slices.SortFunc(retObjs, func(i, j Obj) int {
-		if i.Popularity > j.Popularity {
-			return -1
-		}
-		if i.Popularity < j.Popularity {
-			return 1
-		}
-		if i.Popularity == j.Popularity {
-			return 0
-		}
-		return 0
+		return int(j.Popularity) - int(i.Popularity)
 	})
+
 	return retObjs, nil
 }
 
-func searchLevel(currLev map[rune]*trieNode, currPrefix string) []Obj {
-	keys := maps.Keys(currLev)
+func searchLevel(currNode *trieNode, currPrefix string) []Obj {
+	keys := maps.Keys(currNode.Children)
 
 	objs := []Obj{}
 
 	for k := range keys {
-		if currLev[k].IsNameEnd {
-			objs = append(objs, Obj{currPrefix + string(k), currLev[k].Id, currLev[k].Popularity})
+		if currNode.Children[k].IsNameEnd {
+			objs = append(objs, Obj{currPrefix + string(k), currNode.Children[k].Id, currNode.Children[k].Popularity})
 		}
-		if len(currLev[k].Children) != 0 {
-			objs = append(objs, searchLevel(currLev[k].Children, currPrefix+string(k))...)
+		if currNode.Children[k].Children != nil {
+			objs = append(objs, searchLevel(currNode.Children[k], currPrefix+string(k))...)
 		}
 	}
 	return objs

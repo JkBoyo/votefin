@@ -19,7 +19,7 @@ func TestTrie(t *testing.T) {
 		{Str: "This word is happy", Val: 56466, Popularity: 1.0},
 	}
 	for _, obj := range testObjSlice {
-		testTrie.Insert(obj.Str, obj.Val, obj.Popularity)
+		testTrie.Insert(obj)
 	}
 	printTrie, err := json.MarshalIndent(testTrie, "", " ")
 	if err != nil {
@@ -67,6 +67,8 @@ func TestTrie(t *testing.T) {
 	for _, tC := range testCases {
 		results, err := testTrie.RetrieveObjs(tC.prefix)
 
+		fmt.Println(tC.expected)
+		fmt.Println(results)
 		if !reflect.DeepEqual(results, tC.expected) {
 			t.Errorf("\n%s\n failed obj's.\n Expected: %v\n Actual: %v",
 				tC.name, tC.expected, results)
