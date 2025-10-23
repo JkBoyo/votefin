@@ -79,6 +79,10 @@ func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 func searchLevel(currNode *trieNode, currPrefix string) []Obj {
 	keys := maps.Keys(currNode.Children)
 
+	if len(currNode.Children) == 0 {
+		return []Obj{{currPrefix, currNode.Id, currNode.Popularity}}
+	}
+
 	objs := []Obj{}
 
 	for k := range keys {
