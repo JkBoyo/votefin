@@ -68,6 +68,9 @@ func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 	}
 
 	retObjs := searchLevel(curNode, pref)
+	if curNode.IsNameEnd {
+		retObjs = append(retObjs, Obj{pref, curNode.Id, curNode.Popularity})
+	}
 
 	slices.SortFunc(retObjs, func(i, j Obj) int {
 		return int(j.Popularity) - int(i.Popularity)
@@ -78,10 +81,6 @@ func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 
 func searchLevel(currNode *trieNode, currPrefix string) []Obj {
 	keys := maps.Keys(currNode.Children)
-
-	if len(currNode.Children) == 0 {
-		return []Obj{{currPrefix, currNode.Id, currNode.Popularity}}
-	}
 
 	objs := []Obj{}
 
