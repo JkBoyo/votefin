@@ -4,6 +4,7 @@ import "www.github.com/jkboyo/votefin/internal/database"
 import "fmt"
 
 templ PageTemplate(authenticated bool, userVotedMovies []database.Movie, allMovies []database.Movie) {
+	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
@@ -16,9 +17,9 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.Movie, allMovi
 			<div class="pageGridCont">
 				<div class="">
 					<h2>Votes</h2>
-					@MovieList(userVotedMovies)
+					@MovieList("moviesVotedOn", userVotedMovies)
 				</div>
-				<div>
+				<div id="moviesToVoteColumn">
 					<input
 						name="searchMovies"
 						type="text"
@@ -29,8 +30,8 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.Movie, allMovi
 					<div id="foundMovies"></div>
 					<h2>Content to Vote On</h2>
 					<button id="" type="button">Submit Votes</button>
-					<form hx-post="/vote">
-						@MovieList(allMovies)
+					<form id="moviesToVoteForm" hx-post="/vote">
+						@MovieList("moviesToVote", allMovies)
 					</form>
 				</div>
 			</div>
@@ -38,8 +39,8 @@ templ PageTemplate(authenticated bool, userVotedMovies []database.Movie, allMovi
 	</html>
 }
 
-templ MovieList(allMovies []database.Movie) {
-	<ul class="">
+templ MovieList(id string, allMovies []database.Movie) {
+	<ul id={ id }>
 		if len(allMovies) < 1 {
 			@NoMovies()
 		} else {

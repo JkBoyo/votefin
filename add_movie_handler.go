@@ -16,7 +16,6 @@ func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) 
 		fmt.Println("Error parsing forms")
 	}
 
-	fmt.Println(r.Form)
 	moviePrefix := r.FormValue("searchMovies")
 
 	tmdbTrie := cfg.tmdbTrie
@@ -34,7 +33,7 @@ func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) 
 		respondWithHtmlErr(w, 500, err.Error())
 	}
 
-	numRet := min(5, len(currentMatches))
+	numRet := min(10, len(currentMatches))
 
 	fmt.Println(numRet)
 
@@ -47,11 +46,7 @@ func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) 
 }
 
 func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		fmt.Println("Error parsing forms")
-	}
-	movieIDStr := r.FormValue("movieID")
+	movieIDStr := r.URL.Query().Get("movieId")
 
 	movieID, err := strconv.ParseInt(movieIDStr, 10, 64)
 	if err != nil {
@@ -71,9 +66,9 @@ func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
 
 	resStr := fmt.Sprintf("Successfully added %s for voting", movie.Title)
 
-	notif := templates.Notification(resStr)
+	html := templates.AddMovieRet(resStr, movie)
 
-	fmt.Println(notif)
+	fmt.Println(html)
 
-	respondWithHTML(w, 200, notif)
+	respondWithHTML(w, 200, html)
 }

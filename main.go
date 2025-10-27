@@ -58,13 +58,13 @@ func main() {
 
 	imagesFP := "./assets/static/images/"
 	if _, err := os.Stat(imagesFP); os.IsNotExist(err) {
-		os.Mkdir(imagesFP, 775)
+		os.Mkdir(imagesFP, 0775)
 	}
 
 	assets := http.FileServer(http.Dir("./assets/static/"))
 
 	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
-	serveMux.HandleFunc("POST /addmovie/", apiConf.addMovieHandler)
+	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 	serveMux.Handle("/", templ.Handler(templates.PageTemplate(true, userMovies, movies)))
 	server := http.Server{

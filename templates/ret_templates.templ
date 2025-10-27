@@ -1,11 +1,32 @@
 package templates
 
-import "www.github.com/jkboyo/votefin/internal/trie"
+import (
+	"fmt"
+	"www.github.com/jkboyo/votefin/internal/database"
+	"www.github.com/jkboyo/votefin/internal/trie"
+)
 
 templ SearchList(retMovies []trie.Obj) {
-	<ul>
+	<div id="foundMovies">
 		for _, obj := range retMovies {
-			<li>{ obj.Str }</li>
+			<li
+				value={ obj.Val }
+				hx-post={ fmt.Sprintf("/addmovie?movieId=%d", obj.Val) }
+				hx-target="#moviesToVote"
+				hx-swap="beforeend"
+			>
+				{ obj.Str }
+			</li>
+			//<input
+			//	id={ fmt.Sprintf("movie%d", obj.Val) }
+			//	type="hidden"
+			//	value={ obj.Val }
+			///>
 		}
-	</ul>
+	</div>
+}
+
+templ AddMovieRet(notif string, movie database.Movie) {
+	<div id="foundMovies" hx-swap-oob="true">{ notif }</div>
+	@Movie(movie)
 }
