@@ -1,3 +1,6 @@
 .env
 *.db
 static/images/*
+assets/movie_ids_*
+assets/static/images/*
+web/
