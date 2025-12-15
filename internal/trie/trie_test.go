@@ -14,6 +14,7 @@ func TestTrie(t *testing.T) {
 		{Str: "This word is cool", Val: 123456, Popularity: 10.0},
 		{Str: "This sentence is different", Val: 54321, Popularity: 7.0},
 		{Str: "This sentence has some diff", Val: 56789, Popularity: 5.0},
+		{Str: "This sentence has some differences", Val: 78329, Popularity: 6.0},
 		{Str: "This sentence has some differences", Val: 3456789, Popularity: 4.0},
 		{Str: "This word drools", Val: 98765, Popularity: 3.0},
 		{Str: "This word is happy", Val: 56466, Popularity: 1.0},
@@ -37,6 +38,7 @@ func TestTrie(t *testing.T) {
 			[]Obj{
 				{Str: "This word is cool", Val: 123456, Popularity: 10.0},
 				{Str: "This sentence is different", Val: 54321, Popularity: 7.0},
+				{Str: "This sentence has some differences", Val: 78329, Popularity: 6.0},
 				{Str: "This sentence has some diff", Val: 56789, Popularity: 5.0},
 				{Str: "This sentence has some differences", Val: 3456789, Popularity: 4.0},
 				{Str: "This word drools", Val: 98765, Popularity: 3.0},
@@ -49,6 +51,7 @@ func TestTrie(t *testing.T) {
 		{
 			[]Obj{
 				{Str: "This sentence is different", Val: 54321, Popularity: 7.0},
+				{Str: "This sentence has some differences", Val: 78329, Popularity: 6.0},
 				{Str: "This sentence has some diff", Val: 56789, Popularity: 5.0},
 				{Str: "This sentence has some differences", Val: 3456789, Popularity: 4.0},
 			},

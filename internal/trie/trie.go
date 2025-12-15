@@ -11,10 +11,9 @@ var (
 )
 
 type trieNode struct {
-	Children   map[rune]*trieNode
-	Id         int
-	Popularity float32
-	IsNameEnd  bool
+	Children  map[rune]*trieNode
+	Movies    []Movie
+	IsNameEnd bool
 }
 
 type Trie struct {
@@ -27,11 +26,16 @@ type Obj struct {
 	Popularity float32
 }
 
+type Movie struct {
+	ID         int
+	Popularity float32
+}
+
 func NewTrie() *Trie {
 	return &Trie{
 		Root: &trieNode{
 			Children:  map[rune]*trieNode{},
-			Id:        0,
+			Movies:    []Movie{},
 			IsNameEnd: false,
 		},
 	}
@@ -52,8 +56,7 @@ func (t *Trie) Insert(obj Obj) {
 			curNode = newNode
 		}
 	}
-	curNode.Id = obj.Val
-	curNode.Popularity = obj.Popularity
+	curNode.Movies = append(curNode.Movies, Movie{ID: obj.Val, Popularity: obj.Popularity})
 	curNode.IsNameEnd = true
 }
 
@@ -69,7 +72,9 @@ func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 
 	retObjs := searchLevel(curNode, pref)
 	if curNode.IsNameEnd {
-		retObjs = append(retObjs, Obj{pref, curNode.Id, curNode.Popularity})
+		for _, movie := range curNode.Movies {
+			retObjs = append(retObjs, Obj{pref, movie.ID, movie.Popularity})
+		}
 	}
 
 	slices.SortFunc(retObjs, func(i, j Obj) int {
@@ -86,7 +91,9 @@ func searchLevel(currNode *trieNode, currPrefix string) []Obj {
 
 	for k := range keys {
 		if currNode.Children[k].IsNameEnd {
-			objs = append(objs, Obj{currPrefix + string(k), currNode.Children[k].Id, currNode.Children[k].Popularity})
+			for _, movie := range currNode.Children[k].Movies {
+				objs = append(objs, Obj{currPrefix + string(k), movie.ID, movie.Popularity})
+			}
 		}
 		if currNode.Children[k].Children != nil {
 			objs = append(objs, searchLevel(currNode.Children[k], currPrefix+string(k))...)
