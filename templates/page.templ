@@ -62,7 +62,7 @@ templ NoMovies() {
 templ Movie(movie database.Movie) {
 	<li>
 		<div class="">
-			<a href={ movie.TmdbUrl }>
+			<a href={ movie.TmdbUrl } target="_blank">
 				<img src={ fmt.Sprintf("/static/images%s", movie.PosterPath) } alt={ movie.Title } class=""/>
 				<label for={ movie.Title }>{ movie.Title } </label>
 			</a>

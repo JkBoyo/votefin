@@ -3,6 +3,7 @@ package templates
 import (
 	"fmt"
 	"www.github.com/jkboyo/votefin/internal/database"
+	"www.github.com/jkboyo/votefin/internal/tmdb"
 	"www.github.com/jkboyo/votefin/internal/trie"
 )
 
@@ -17,6 +18,7 @@ templ SearchList(retMovies []trie.Obj) {
 			>
 				{ obj.Str }
 			</li>
+			<a href={ fmt.Sprintf("https://www.%s/movie/%d", tmdb.TMDBBaseURL, obj.Val) } target="_blank">Link</a>
 			//<input
 			//	id={ fmt.Sprintf("movie%d", obj.Val) }
 			//	type="hidden"
