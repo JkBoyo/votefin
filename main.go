@@ -65,6 +65,7 @@ func main() {
 
 	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
+	serveMux.HandleFunc("POST /login", apiConf.loginUser)
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 	serveMux.Handle("/", templ.Handler(templates.PageTemplate(true, userMovies, movies)))
 	server := http.Server{
@@ -74,10 +75,6 @@ func main() {
 
 	fmt.Println("Serving at http://localhost:8080")
 	server.ListenAndServe()
-}
-
-func (cfg *apiConfig) login(w http.ResponseWriter, r *http.Request) {
-
 }
 
 func respondWithHTML(w http.ResponseWriter, code int, comp templ.Component) error {
