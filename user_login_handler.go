@@ -25,6 +25,13 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Authentication failed: %s\n", err)
 	}
+	authCookie := &http.Cookie{
+		Name:     "Token",
+		Value:    token,
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: 2,
+	}
 
-	fmt.Println(token)
+	http.SetCookie(w, authCookie)
 }
