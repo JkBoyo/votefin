@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 )
 
 var JellyfinAuthHeaderTemp string = "MediaBrowser Token=\"%s\", Client=\"Votefin\", Version=\"%s\", DeviceId=\"%s\", Device=\"votefin server\""
+
+var JellyfinAuthError error = errors.New("User Not Authenticated")
 
 func addJellyfinAuthHeader(r *http.Request, token, userName string) {
 	r.Header.Add(
@@ -56,6 +59,10 @@ func AuthenticateUser(userName, password string, con context.Context) (string, e
 		return "", fmt.Errorf("Error making the request: %s", err.Error())
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", JellyfinAuthError
+	}
 
 	respData, err := io.ReadAll(resp.Body)
 	if err != nil {
