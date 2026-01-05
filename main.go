@@ -13,6 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"www.github.com/jkboyo/votefin/internal/database"
+	"www.github.com/jkboyo/votefin/internal/jellyfin"
 	"www.github.com/jkboyo/votefin/internal/tmdb"
 	"www.github.com/jkboyo/votefin/internal/trie"
 	"www.github.com/jkboyo/votefin/templates"
@@ -67,7 +68,7 @@ func main() {
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
 	serveMux.HandleFunc("POST /login", apiConf.loginUser)
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
-	serveMux.Handle("/", templ.Handler(templates.PageTemplate(true, userMovies, movies)))
+	//serveMux.HandleFunc("/")
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: serveMux,
@@ -77,10 +78,25 @@ func main() {
 	server.ListenAndServe()
 }
 
+type authorizedHandler func(w http.ResponseWriter, r http.Request, user database.User)
+
+func AuthorizeUser(handler authorizedHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("token")
+		if err != nil {
+			respondWithHTML(w, http.StatusNetworkAuthenticationRequired, templates.BasePage(templates.Login()))
+			return
+		}
+		token := cookie.Value
+
+		handler(w, r, user)
+	}
+}
+
 func respondWithHTML(w http.ResponseWriter, code int, comp templ.Component) error {
 	w.Header().Set("Content-Type", "application-/x-www-form-urlencoded")
 	w.WriteHeader(code)
-	err := comp.Render(context.Background(), os.Stdout)
+	err := templates.BasePage(comp).Render(context.Background(), os.Stdout)
 	if err != nil {
 		respondWithHtmlErr(w, 500, err.Error())
 	}
