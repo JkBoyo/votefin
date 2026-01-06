@@ -10,13 +10,21 @@ import (
 	"io"
 	"net/http"
 	"os"
-
-	"www.github.com/jkboyo/votefin/internal/database"
 )
 
 var JellyfinAuthHeaderTemp string = "MediaBrowser Token=\"%s\", Client=\"Votefin\", Version=\"%s\", DeviceId=\"%s\", Device=\"votefin server\""
 
 var JellyfinAuthError error = errors.New("User Not Authenticated")
+
+type JellyfinUser struct {
+	Name string `json:"Name"`
+	Id   string `json:"Id"`
+}
+
+type JellyfinAuthResp struct {
+	AccessToken string       `json:"AccessToken"`
+	User        JellyfinUser `json:"User"`
+}
 
 func addJellyfinAuthHeader(r *http.Request, token, userName string) {
 	r.Header.Add(
@@ -30,7 +38,7 @@ func addJellyfinAuthHeader(r *http.Request, token, userName string) {
 	r.Header.Add("Content-Type", "application/json")
 }
 
-func ValidateToken(token string) (database.User, error) {
+func ValidateToken(token string) (JellyfinUser, error) {
 	client := http.DefaultClient
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s/Users/Me", os.Getenv("Jellyfin_URL")), nil)
@@ -46,13 +54,25 @@ func ValidateToken(token string) (database.User, error) {
 		//TODO: Add error handling for this request
 	}
 	if resp.StatusCode != http.StatusAccepted {
-		return database.User{}, JellyfinAuthError
+		return JellyfinUser{}, JellyfinAuthError
 	}
 
-	return database.User{}, nil
+	respData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return JellyfinUser{}, err
+	}
+
+	jellyUser := JellyfinUser{}
+
+	err = json.Unmarshal(respData, &jellyUser)
+	if err != nil {
+		return JellyfinUser{}, err
+	}
+
+	return jellyUser, nil
 }
 
-func AuthenticateUser(userName, password string, con context.Context) (string, error) {
+func AuthenticateUser(userName, password string, con context.Context) (JellyfinAuthResp, error) {
 	params := struct {
 		Username string `json:"Username"`
 		Pw       string `json:"Pw"`
@@ -62,41 +82,39 @@ func AuthenticateUser(userName, password string, con context.Context) (string, e
 
 	reqData, err := json.Marshal(params)
 	if err != nil {
-		return "", fmt.Errorf("Error marshaling params to json: %s", err.Error())
+		return JellyfinAuthResp{}, fmt.Errorf("Error marshaling params to json: %s", err.Error())
 	}
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s/Users/authenticatebyname", os.Getenv("JELLYFIN_URL")), bytes.NewReader(reqData))
 	if err != nil {
 
-		return "", fmt.Errorf("Error creating request: %s", err.Error())
+		return JellyfinAuthResp{}, fmt.Errorf("Error creating request: %s", err.Error())
 	}
 	defer req.Body.Close()
 
 	addJellyfinAuthHeader(req, "", userName)
 
-	AuthResp := struct {
-		AccessToken string
-	}{}
+	AuthResp := JellyfinAuthResp{}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("Error making the request: %s", err.Error())
+		return JellyfinAuthResp{}, fmt.Errorf("Error making the request: %s", err.Error())
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return "", JellyfinAuthError
+		return JellyfinAuthResp{}, JellyfinAuthError
 	}
 
 	respData, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return JellyfinAuthResp{}, err
 	}
 
 	err = json.Unmarshal(respData, &AuthResp)
 	if err != nil {
-		return "", err
+		return JellyfinAuthResp{}, err
 	}
 
-	return AuthResp.AccessToken, nil
+	return AuthResp, nil
 }
