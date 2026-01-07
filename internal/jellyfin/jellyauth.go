@@ -43,7 +43,7 @@ func ValidateToken(token string) (JellyfinUser, error) {
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s/Users/Me", os.Getenv("Jellyfin_URL")), nil)
 	if err != nil {
-		//TODO: Add error handling for this case
+		return JellyfinUser{}, fmt.Errorf("Error creating request: %v", err)
 	}
 	defer req.Body.Close()
 
@@ -51,22 +51,23 @@ func ValidateToken(token string) (JellyfinUser, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		//TODO: Add error handling for this request
+		return JellyfinUser{}, fmt.Errorf("Error performing request: %v", err)
 	}
 	if resp.StatusCode != http.StatusAccepted {
 		return JellyfinUser{}, JellyfinAuthError
 	}
+	defer resp.Body.Close()
 
 	respData, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return JellyfinUser{}, err
+		return JellyfinUser{}, fmt.Errorf("Error reading in response data: %v", err)
 	}
 
 	jellyUser := JellyfinUser{}
 
 	err = json.Unmarshal(respData, &jellyUser)
 	if err != nil {
-		return JellyfinUser{}, err
+		return JellyfinUser{}, fmt.Errorf("Error unmarshaling Json: %v", err)
 	}
 
 	return jellyUser, nil
