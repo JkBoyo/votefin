@@ -7,19 +7,20 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
 const addUser = `-- name: AddUser :exec
-INSERT INTO users (id, created_at, updated_at, username)
-VALUES (?,?,?,?)
+INSERT INTO users (id, created_at, updated_at, jellyfin_user_id, username, is_admin)
+VALUES (?,?,?,?,?,?)
 `
 
 type AddUserParams struct {
-	ID        int64
-	CreatedAt sql.NullString
-	UpdatedAt sql.NullString
-	Username  sql.NullString
+	ID             int64
+	CreatedAt      string
+	UpdatedAt      string
+	JellyfinUserID string
+	Username       string
+	IsAdmin        int64
 }
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
@@ -27,7 +28,28 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
 		arg.ID,
 		arg.CreatedAt,
 		arg.UpdatedAt,
+		arg.JellyfinUserID,
 		arg.Username,
+		arg.IsAdmin,
 	)
 	return err
+}
+
+const getUserByJellyID = `-- name: GetUserByJellyID :one
+SELECT id, created_at, updated_at, jellyfin_user_id, username, is_admin FROM users
+WHERE jellyfin_user_id = ?
+`
+
+func (q *Queries) GetUserByJellyID(ctx context.Context, jellyfinUserID string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByJellyID, jellyfinUserID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.JellyfinUserID,
+		&i.Username,
+		&i.IsAdmin,
+	)
+	return i, err
 }

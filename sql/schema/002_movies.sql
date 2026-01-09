@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE movies(
-	id INT PRIMARY KEY,
+	id INT PRIMARY KEY NOT NULL,
 	created_at TEXT NOT NULL,
 	updated_at TEXT NOT NULL,
 	title TEXT NOT NULL,

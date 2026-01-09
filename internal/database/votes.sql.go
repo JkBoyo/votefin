@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createVote = `-- name: CreateVote :one
@@ -85,15 +84,15 @@ INNER JOIN votes v on u.id = v.user_id
 WHERE v.movie_id = ?
 `
 
-func (q *Queries) GetUsersByMoveisVoted(ctx context.Context, movieID int64) ([]sql.NullString, error) {
+func (q *Queries) GetUsersByMoveisVoted(ctx context.Context, movieID int64) ([]string, error) {
 	rows, err := q.db.QueryContext(ctx, getUsersByMoveisVoted, movieID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []sql.NullString
+	var items []string
 	for rows.Next() {
-		var username sql.NullString
+		var username string
 		if err := rows.Scan(&username); err != nil {
 			return nil, err
 		}

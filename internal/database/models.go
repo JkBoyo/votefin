@@ -4,10 +4,6 @@
 
 package database
 
-import (
-	"database/sql"
-)
-
 type Movie struct {
 	ID         int64
 	CreatedAt  string
@@ -19,10 +15,12 @@ type Movie struct {
 }
 
 type User struct {
-	ID        int64
-	CreatedAt sql.NullString
-	UpdatedAt sql.NullString
-	Username  sql.NullString
+	ID             int64
+	CreatedAt      string
+	UpdatedAt      string
+	JellyfinUserID string
+	Username       string
+	IsAdmin        int64
 }
 
 type Vote struct {

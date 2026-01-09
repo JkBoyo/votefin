@@ -62,22 +62,3 @@ func (api *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 		handler(w, r, user)
 	}
 }
-
-func respondWithHTML(w http.ResponseWriter, code int, comp templ.Component) error {
-	w.Header().Set("Content-Type", "application-/x-www-form-urlencoded")
-	w.WriteHeader(code)
-	err := templates.BasePage(comp).Render(context.Background(), os.Stdout)
-	if err != nil {
-		respondWithHtmlErr(w, 500, err.Error())
-	}
-	err = comp.Render(context.Background(), w)
-	if err != nil {
-		respondWithHtmlErr(w, 500, err.Error())
-	}
-	return nil
-}
-
-func respondWithHtmlErr(w http.ResponseWriter, code int, errMsg string) error {
-	errNotif := templates.Notification(errMsg)
-	return respondWithHTML(w, code, errNotif)
-}
