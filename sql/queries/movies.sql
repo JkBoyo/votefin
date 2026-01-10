@@ -2,7 +2,7 @@
 SELECT id, created_at, updated_at, title, tmdb_url, poster_path, status FROM movies;
 
 -- name: GetMoviesSortedByVotes :many
-SELECT *, COUNT(v.id) AS vote_count FROM movies m
+SELECT m.id, created_at, updated_at, title, tmdb_url, poster_path, status, COUNT(v.id) AS vote_count FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 GROUP BY m.id
 ORDER BY vote_count DESC;

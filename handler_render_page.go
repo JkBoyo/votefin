@@ -30,11 +30,6 @@ func respondWithHtmlErr(w http.ResponseWriter, code int, errMsg string) error {
 }
 
 func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, jfUser jellyfin.JellyfinUser) {
-	allMovies, err := cfg.db.GetMovies(r.Context())
-	if err != nil {
-		//TODO: set error handling
-	}
-
 	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
 	if err != nil {
 		//TODO: set error handling
@@ -47,4 +42,10 @@ func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, 
 		//TODO: set error handling
 	}
 
+	allMovies, err := cfg.db.GetMovies(r.Context())
+	if err != nil {
+		//TODO: set error handling
+	}
+
+	page := templates.BasePage(templates.VotePage(votedOnMovies, userVotedMovies, allMovies))
 }
