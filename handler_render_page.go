@@ -30,12 +30,21 @@ func respondWithHtmlErr(w http.ResponseWriter, code int, errMsg string) error {
 }
 
 func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, jfUser jellyfin.JellyfinUser) {
+	page, err := renderPage(cfg, r, jfUser)
+	if err != nil {
+		//TODO: set error handling
+	}
+
+	respondWithHTML(w, http.StatusAccepted, page)
+}
+
+func renderPage(cfg *apiConfig, r *http.Request, u jellyfin.JellyfinUser) (templ.Component, error) {
 	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
 	if err != nil {
 		//TODO: set error handling
 	}
 
-	user, err := cfg.db.GetUserByJellyID(r.Context(), jfUser.Id)
+	user, err := cfg.db.GetUserByJellyID(r.Context(), u.Id)
 
 	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), user.ID)
 	if err != nil {
@@ -47,5 +56,5 @@ func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, 
 		//TODO: set error handling
 	}
 
-	page := templates.BasePage(templates.VotePage(votedOnMovies, userVotedMovies, allMovies))
+	return templates.VotePage(votedOnMovies, userVotedMovies, allMovies), nil
 }

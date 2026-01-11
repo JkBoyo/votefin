@@ -3,11 +3,11 @@ package templates
 import "www.github.com/jkboyo/votefin/internal/database"
 import "fmt"
 
-templ VotePage(votedOnMovies database.GetMoviesSortedByVotesRow, userVotedMovies, allMovies []database.Movie) {
+templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotedMovies, allMovies []database.Movie) {
 	<div class="pageGridCont">
 		<div class="">
 			<h2>Votes</h2>
-			@MovieList("moviesVotedOn", votedOnMovies)
+			@VotesMovieList("moviesVotedOn", votedOnMovies)
 		</div>
 		<div class="">
 			<h2>User Votes</h2>
@@ -31,7 +31,7 @@ templ VotePage(votedOnMovies database.GetMoviesSortedByVotesRow, userVotedMovies
 	</div>
 }
 
-templ BasePage(body templ.Component) {
+templ BasePage(c templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -41,8 +41,22 @@ templ BasePage(body templ.Component) {
 			<link rel="stylesheet" type="text/css" href="./static/main.css"/>
 		</head>
 		<header>Votefin</header>
-		<body></body>
+		<body>
+			{ c }
+		</body>
 	</html>
+}
+
+templ VotesMovieList(id string, votedOnMovies []database.GetMoviesSortedByVotesRow) {
+	<ol id={ id }>
+		if len(votedOnMovies) < 1 {
+			@NoMovies()
+		} else {
+			for _, movie := range votedOnMovies {
+				@votedMovie(movie)
+			}
+		}
+	</ol>
 }
 
 templ MovieList(id string, allMovies []database.Movie) {
@@ -65,14 +79,25 @@ templ NoMovies() {
 	</li>
 }
 
-templ Movie(movie database.Movie) {
+templ Movie(m database.Movie) {
 	<li>
 		<div class="">
-			<a href={ movie.TmdbUrl } target="_blank">
-				<img src={ fmt.Sprintf("/static/images%s", movie.PosterPath) } alt={ movie.Title } class=""/>
-				<label for={ movie.Title }>{ movie.Title } </label>
+			<a href={ m.TmdbUrl } target="_blank">
+				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<label for={ m.Title }>{ fmt.Sprintf("Title: %s", m.Title) } </label>
 			</a>
 		</div>
-		<input type="checkbox" id={ movie.Title } value={ movie.ID }/>
+	</li>
+}
+
+templ votedMovie(m database.GetMoviesSortedByVotesRow) {
+	<li>
+		<div class="">
+			<a href={ m.TmdbUrl } target="_blank">
+				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
+			</a>
+		</div>
+		<input type="checkbox" id={ m.Title } value={ m.ID }/>
 	</li>
 }

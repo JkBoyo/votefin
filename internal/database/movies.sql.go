@@ -45,25 +45,21 @@ func (q *Queries) GetMovies(ctx context.Context) ([]Movie, error) {
 }
 
 const getMoviesSortedByVotes = `-- name: GetMoviesSortedByVotes :many
-SELECT m.id, m.created_at, updated_at, title, tmdb_url, poster_path, status, v.id, v.created_at, user_id, movie_id, COUNT(v.id) AS vote_count FROM movies m
+SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_url, m.poster_path, m.status, COUNT(v.id) AS vote_count FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 GROUP BY m.id
 ORDER BY vote_count DESC
 `
 
 type GetMoviesSortedByVotesRow struct {
-	ID          int64
-	CreatedAt   string
-	UpdatedAt   string
-	Title       string
-	TmdbUrl     string
-	PosterPath  string
-	Status      string
-	ID_2        int64
-	CreatedAt_2 int64
-	UserID      int64
-	MovieID     int64
-	VoteCount   int64
+	ID         int64
+	CreatedAt  string
+	UpdatedAt  string
+	Title      string
+	TmdbUrl    string
+	PosterPath string
+	Status     string
+	VoteCount  int64
 }
 
 func (q *Queries) GetMoviesSortedByVotes(ctx context.Context) ([]GetMoviesSortedByVotesRow, error) {
@@ -83,10 +79,6 @@ func (q *Queries) GetMoviesSortedByVotes(ctx context.Context) ([]GetMoviesSorted
 			&i.TmdbUrl,
 			&i.PosterPath,
 			&i.Status,
-			&i.ID_2,
-			&i.CreatedAt_2,
-			&i.UserID,
-			&i.MovieID,
 			&i.VoteCount,
 		); err != nil {
 			return nil, err

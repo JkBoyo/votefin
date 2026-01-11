@@ -55,7 +55,7 @@ func main() {
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
 	serveMux.HandleFunc("POST /login", apiConf.loginUser)
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
-	//serveMux.HandleFunc("/")
+	serveMux.HandleFunc("/", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: serveMux,
