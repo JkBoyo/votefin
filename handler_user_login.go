@@ -43,7 +43,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	page, err := renderPage(cfg, r, authResp.User)
 	if err != nil {
-		//TODO: handle error
+		respondWithHtmlErr(w, http.StatusInternalServerError, err.Error())
 	}
 
 	respondWithHTML(w, http.StatusAccepted, page)
@@ -53,7 +53,7 @@ func (api *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("token")
 		if err != nil {
-			respondWithHTML(w, http.StatusNetworkAuthenticationRequired, templates.LoginError(err.Error()))
+			respondWithHTML(w, http.StatusAccepted, templates.Login())
 			return
 		}
 		token := cookie.Value

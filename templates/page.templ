@@ -42,7 +42,7 @@ templ BasePage(c templ.Component) {
 		</head>
 		<header>Votefin</header>
 		<body>
-			{ c }
+			@c
 		</body>
 	</html>
 }
@@ -87,6 +87,7 @@ templ Movie(m database.Movie) {
 				<label for={ m.Title }>{ fmt.Sprintf("Title: %s", m.Title) } </label>
 			</a>
 		</div>
+		<input type="checkbox" id={ m.Title } value={ fmt.Sprintf("%d", m.ID) }/>
 	</li>
 }
 
@@ -98,6 +99,5 @@ templ votedMovie(m database.GetMoviesSortedByVotesRow) {
 				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
 			</a>
 		</div>
-		<input type="checkbox" id={ m.Title } value={ m.ID }/>
 	</li>
 }

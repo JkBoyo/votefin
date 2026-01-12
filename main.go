@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 
 	"www.github.com/jkboyo/votefin/internal/database"
 	"www.github.com/jkboyo/votefin/internal/tmdb"
 	"www.github.com/jkboyo/votefin/internal/trie"
+	"www.github.com/jkboyo/votefin/templates"
 )
 
 type apiConfig struct {
@@ -54,8 +56,9 @@ func main() {
 	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
 	serveMux.HandleFunc("POST /login", apiConf.loginUser)
+	serveMux.HandleFunc("GET /loadPage", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
-	serveMux.HandleFunc("/", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
+	serveMux.Handle("/", templ.Handler(templates.BasePage(templates.Login())))
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: serveMux,
