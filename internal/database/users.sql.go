@@ -9,13 +9,13 @@ import (
 	"context"
 )
 
-const addUser = `-- name: AddUser :exec
-INSERT INTO users (id, created_at, updated_at, jellyfin_user_id, username, is_admin)
-VALUES (?,?,?,?,?,?)
+const addUser = `-- name: AddUser :one
+INSERT INTO users (created_at, updated_at, jellyfin_user_id, username, is_admin)
+VALUES (?,?,?,?,?)
+RETURNING id, created_at, updated_at, jellyfin_user_id, username, is_admin
 `
 
 type AddUserParams struct {
-	ID             int64
 	CreatedAt      string
 	UpdatedAt      string
 	JellyfinUserID string
@@ -23,16 +23,24 @@ type AddUserParams struct {
 	IsAdmin        int64
 }
 
-func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
-	_, err := q.db.ExecContext(ctx, addUser,
-		arg.ID,
+func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, addUser,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.JellyfinUserID,
 		arg.Username,
 		arg.IsAdmin,
 	)
-	return err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.JellyfinUserID,
+		&i.Username,
+		&i.IsAdmin,
+	)
+	return i, err
 }
 
 const getUserByJellyID = `-- name: GetUserByJellyID :one

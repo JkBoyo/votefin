@@ -16,9 +16,9 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error parsing forms")
 	}
 
-	userName := r.FormValue("userName")
+	userName := r.FormValue("Username")
 
-	passWord := r.FormValue("passWord")
+	passWord := r.FormValue("Password")
 
 	fmt.Println("User Name: " + userName)
 	fmt.Println("Password: " + passWord)

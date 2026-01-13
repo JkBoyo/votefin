@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/a-h/templ"
+	"www.github.com/jkboyo/votefin/internal/database"
 	"www.github.com/jkboyo/votefin/internal/jellyfin"
 	"www.github.com/jkboyo/votefin/templates"
 )
@@ -46,7 +49,26 @@ func renderPage(cfg *apiConfig, r *http.Request, u jellyfin.JellyfinUser) (templ
 	}
 
 	user, err := cfg.db.GetUserByJellyID(r.Context(), u.Id)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		currTime := time.Now().Local().String()
+		var isAdmin int64
+		if u.IsAdmin {
+			isAdmin = 1
+		} else {
+			isAdmin = 0
+		}
+		newUser := database.AddUserParams{
+			CreatedAt:      currTime,
+			UpdatedAt:      currTime,
+			JellyfinUserID: u.Id,
+			Username:       u.Name,
+			IsAdmin:        isAdmin,
+		}
+		user, err = cfg.db.AddUser(r.Context(), newUser)
+		if err != nil {
+			return nil, fmt.Errorf("Error adding new user to db: %v", err.Error())
+		}
+	} else if err != nil {
 		return nil, fmt.Errorf("Error fetching user info: %v", err.Error())
 	}
 
