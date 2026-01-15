@@ -53,7 +53,7 @@ func (api *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("token")
 		if err != nil {
-			respondWithHTML(w, http.StatusAccepted, templates.Login())
+			respondWithHTML(w, http.StatusAccepted, templates.LoginError(err.Error()))
 			return
 		}
 		token := cookie.Value

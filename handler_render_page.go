@@ -48,6 +48,8 @@ func renderPage(cfg *apiConfig, r *http.Request, u jellyfin.JellyfinUser) (templ
 		return nil, fmt.Errorf("Error fetching movies voted on: %v", err.Error())
 	}
 
+	fmt.Println(u)
+
 	user, err := cfg.db.GetUserByJellyID(r.Context(), u.Id)
 	if err == sql.ErrNoRows {
 		currTime := time.Now().Local().String()
@@ -64,11 +66,15 @@ func renderPage(cfg *apiConfig, r *http.Request, u jellyfin.JellyfinUser) (templ
 			Username:       u.Name,
 			IsAdmin:        isAdmin,
 		}
+		fmt.Println(newUser)
 		user, err = cfg.db.AddUser(r.Context(), newUser)
 		if err != nil {
+			fmt.Println("error creating user: " + err.Error())
 			return nil, fmt.Errorf("Error adding new user to db: %v", err.Error())
 		}
+
 	} else if err != nil {
+		fmt.Println("not sqlerrnorows err: " + err.Error())
 		return nil, fmt.Errorf("Error fetching user info: %v", err.Error())
 	}
 
