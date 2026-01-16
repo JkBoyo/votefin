@@ -106,3 +106,15 @@ func (q *Queries) GetUsersByMoveisVoted(ctx context.Context, movieID int64) ([]s
 	}
 	return items, nil
 }
+
+const getVotesCountPerUser = `-- name: GetVotesCountPerUser :one
+SELECT COUNT(id) FROM votes
+WHERE user_id = ?
+`
+
+func (q *Queries) GetVotesCountPerUser(ctx context.Context, userID int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getVotesCountPerUser, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}

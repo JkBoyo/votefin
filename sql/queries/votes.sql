@@ -14,3 +14,7 @@ SELECT u.username
 FROM users u
 INNER JOIN votes v on u.id = v.user_id
 WHERE v.movie_id = ?;
+
+-- name: GetVotesCountPerUser :one
+SELECT COUNT(id) FROM votes
+WHERE user_id = ?;

@@ -78,6 +78,11 @@ func renderPage(cfg *apiConfig, r *http.Request, u jellyfin.JellyfinUser) (templ
 		return nil, fmt.Errorf("Error fetching user info: %v", err.Error())
 	}
 
+	userVotesCount, err := cfg.db.GetVotesCountPerUser(r.Context(), user.ID)
+	if err != nil {
+		//TODO: Handle errors check to see if there's an error case for no rows which should just return 0
+	}
+
 	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("Error fetching movies voted on by the user: %v", err.Error())
@@ -88,5 +93,5 @@ func renderPage(cfg *apiConfig, r *http.Request, u jellyfin.JellyfinUser) (templ
 		return nil, fmt.Errorf("Error fetching all movies for voting: %v", err.Error())
 	}
 
-	return templates.VotePage(votedOnMovies, userVotedMovies, allMovies), nil
+	return templates.VotePage(votedOnMovies, int(userVotesCount), userVotedMovies, allMovies), nil
 }
