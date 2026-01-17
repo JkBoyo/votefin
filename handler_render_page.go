@@ -33,8 +33,8 @@ func respondWithHtmlErr(w http.ResponseWriter, code int, errMsg string) error {
 	return respondWithHTML(w, code, errNotif)
 }
 
-func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, jfUser jellyfin.JellyfinUser) {
-	page, err := renderPage(cfg, r, jfUser)
+func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, u database.User) {
+	page, err := renderPage(cfg, r, u)
 	if err != nil {
 		respondWithHtmlErr(w, http.StatusInternalServerError, err.Error())
 	}
@@ -42,7 +42,7 @@ func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, 
 	respondWithHTML(w, http.StatusAccepted, page)
 }
 
-func renderPage(cfg *apiConfig, r *http.Request, u jellyfin.JellyfinUser) (templ.Component, error) {
+func renderPage(cfg *apiConfig, r *http.Request, u database.User) (templ.Component, error) {
 	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
 	if err != nil {
 		return nil, fmt.Errorf("Error fetching movies voted on: %v", err.Error())
