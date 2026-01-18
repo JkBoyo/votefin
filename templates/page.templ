@@ -24,8 +24,8 @@ templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesCoun
 			/>
 			<div id="foundMovies"></div>
 			<h2>Content to Vote On</h2>
-			<button id="" type="button">Submit Votes</button>
 			<form id="moviesToVoteForm" hx-post="/vote">
+				<button id="" type="submit">Submit Votes</button>
 				@MovieList("moviesToVote", allMovies)
 			</form>
 		</div>
@@ -88,7 +88,7 @@ templ Movie(m database.Movie) {
 				<label for={ m.Title }>{ fmt.Sprintf("Title: %s", m.Title) } </label>
 			</a>
 		</div>
-		<input type="checkbox" id={ m.Title } value={ fmt.Sprintf("%d", m.ID) }/>
+		<input type="checkbox" id={ m.Title } name="votedMovie" value={ fmt.Sprintf("%d", m.ID) }/>
 	</li>
 }
 

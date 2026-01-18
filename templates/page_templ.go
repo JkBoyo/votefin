@@ -61,7 +61,7 @@ func VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesCount
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div id=\"moviesToVoteColumn\"><input name=\"searchMovies\" type=\"text\" placeholder=\"Search movies to add\" hx-post=\"/searchmovies\" hx-target=\"#foundMovies\"><div id=\"foundMovies\"></div><h2>Content to Vote On</h2><button id=\"\" type=\"button\">Submit Votes</button><form id=\"moviesToVoteForm\" hx-post=\"/vote\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div id=\"moviesToVoteColumn\"><input name=\"searchMovies\" type=\"text\" placeholder=\"Search movies to add\" hx-post=\"/searchmovies\" hx-target=\"#foundMovies\"><div id=\"foundMovies\"></div><h2>Content to Vote On</h2><form id=\"moviesToVoteForm\" hx-post=\"/vote\"><button id=\"\" type=\"submit\">Submit Votes</button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -360,14 +360,14 @@ func Movie(m database.Movie) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" name=\"votedMovie\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", m.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 91, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/page.templ`, Line: 91, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {

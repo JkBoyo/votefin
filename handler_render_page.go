@@ -2,15 +2,12 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/a-h/templ"
 	"www.github.com/jkboyo/votefin/internal/database"
-	"www.github.com/jkboyo/votefin/internal/jellyfin"
 	"www.github.com/jkboyo/votefin/templates"
 )
 
@@ -48,42 +45,12 @@ func renderPage(cfg *apiConfig, r *http.Request, u database.User) (templ.Compone
 		return nil, fmt.Errorf("Error fetching movies voted on: %v", err.Error())
 	}
 
-	fmt.Println(u)
-
-	user, err := cfg.db.GetUserByJellyID(r.Context(), u.Id)
-	if err == sql.ErrNoRows {
-		currTime := time.Now().Local().String()
-		var isAdmin int64
-		if u.IsAdmin {
-			isAdmin = 1
-		} else {
-			isAdmin = 0
-		}
-		newUser := database.AddUserParams{
-			CreatedAt:      currTime,
-			UpdatedAt:      currTime,
-			JellyfinUserID: u.Id,
-			Username:       u.Name,
-			IsAdmin:        isAdmin,
-		}
-		fmt.Println(newUser)
-		user, err = cfg.db.AddUser(r.Context(), newUser)
-		if err != nil {
-			fmt.Println("error creating user: " + err.Error())
-			return nil, fmt.Errorf("Error adding new user to db: %v", err.Error())
-		}
-
-	} else if err != nil {
-		fmt.Println("not sqlerrnorows err: " + err.Error())
-		return nil, fmt.Errorf("Error fetching user info: %v", err.Error())
-	}
-
-	userVotesCount, err := cfg.db.GetVotesCountPerUser(r.Context(), user.ID)
+	userVotesCount, err := cfg.db.GetVotesCountPerUser(r.Context(), u.ID)
 	if err != nil {
 		//TODO: Handle errors check to see if there's an error case for no rows which should just return 0
 	}
 
-	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), user.ID)
+	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), u.ID)
 	if err != nil {
 		return nil, fmt.Errorf("Error fetching movies voted on by the user: %v", err.Error())
 	}
