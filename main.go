@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
@@ -18,8 +19,9 @@ import (
 )
 
 type apiConfig struct {
-	db       *database.Queries
-	tmdbTrie *trie.Trie
+	db        *database.Queries
+	tmdbTrie  *trie.Trie
+	voteLimit int
 }
 
 func main() {
@@ -42,7 +44,13 @@ func main() {
 	defer db.Close()
 	dbQueries := database.New(db)
 
-	apiConf := apiConfig{db: dbQueries, tmdbTrie: tmdbTrie}
+	voteLimit, err := strconv.Atoi(os.Getenv("VOTE_LIMIT"))
+	if err != nil {
+		fmt.Println("No vote limit set defaulting to 5")
+		voteLimit = 5
+	}
+
+	apiConf := apiConfig{db: dbQueries, tmdbTrie: tmdbTrie, voteLimit: voteLimit}
 
 	serveMux := http.NewServeMux()
 

@@ -28,7 +28,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	authResp, err := jellyfin.AuthenticateUser(userName, passWord, r.Context())
 	if err == jellyfin.JellyfinAuthError {
-		respondWithHTML(w, http.StatusUnauthorized, (templates.LoginError("Invalid username or password")))
+		respondWithHtmlErr(w, http.StatusUnauthorized, "Invalid username or password")
 	} else if err != nil {
 		respondWithHtmlErr(w, http.StatusInternalServerError, "Error setting authentication")
 	}
@@ -74,7 +74,7 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("token")
 		if err != nil {
-			respondWithHTML(w, http.StatusAccepted, templates.LoginError(err.Error()))
+			respondWithHTML(w, http.StatusAccepted, templates.Notification(err.Error()))
 			return
 		}
 		token := cookie.Value
