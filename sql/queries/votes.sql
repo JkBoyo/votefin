@@ -1,6 +1,6 @@
 -- name: CreateVote :one
-INSERT INTO votes (id, created_at, user_id, movie_id)
-VALUES (?, ?, ?, ?)
+INSERT INTO votes (created_at, user_id, movie_id)
+VALUES (?, ?, ?)
 RETURNING *;
 
 -- name: GetMoviesByUserVotes :many

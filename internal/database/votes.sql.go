@@ -10,25 +10,19 @@ import (
 )
 
 const createVote = `-- name: CreateVote :one
-INSERT INTO votes (id, created_at, user_id, movie_id)
-VALUES (?, ?, ?, ?)
+INSERT INTO votes (created_at, user_id, movie_id)
+VALUES (?, ?, ?)
 RETURNING id, created_at, user_id, movie_id
 `
 
 type CreateVoteParams struct {
-	ID        int64
 	CreatedAt int64
 	UserID    int64
 	MovieID   int64
 }
 
 func (q *Queries) CreateVote(ctx context.Context, arg CreateVoteParams) (Vote, error) {
-	row := q.db.QueryRowContext(ctx, createVote,
-		arg.ID,
-		arg.CreatedAt,
-		arg.UserID,
-		arg.MovieID,
-	)
+	row := q.db.QueryRowContext(ctx, createVote, arg.CreatedAt, arg.UserID, arg.MovieID)
 	var i Vote
 	err := row.Scan(
 		&i.ID,

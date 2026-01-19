@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE votes (
-	id INT PRIMARY KEY NOT NULL,
+	id INTEGER PRIMARY KEY,
 	created_at INT NOT NULL,
 	user_id INT NOT NULL REFERENCES users (id)
 			ON DELETE CASCADE,
