@@ -13,3 +13,8 @@ dev-db-down:
 	goose sqlite3 ${DB_PATH} down
 
 dev-db-fr: dev-db-reset dev-db-up
+
+dev-up:
+	templ generate && \
+	sqlc generate
+	go run .
