@@ -10,23 +10,33 @@ import (
 )
 
 const getMovies = `-- name: GetMovies :many
-SELECT id, created_at, updated_at, title, tmdb_url, poster_path, status FROM movies
+SELECT created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status FROM movies
 `
 
-func (q *Queries) GetMovies(ctx context.Context) ([]Movie, error) {
+type GetMoviesRow struct {
+	CreatedAt  string
+	UpdatedAt  string
+	Title      string
+	TmdbID     int64
+	TmdbUrl    string
+	PosterPath string
+	Status     string
+}
+
+func (q *Queries) GetMovies(ctx context.Context) ([]GetMoviesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getMovies)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Movie
+	var items []GetMoviesRow
 	for rows.Next() {
-		var i Movie
+		var i GetMoviesRow
 		if err := rows.Scan(
-			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Title,
+			&i.TmdbID,
 			&i.TmdbUrl,
 			&i.PosterPath,
 			&i.Status,
@@ -45,7 +55,7 @@ func (q *Queries) GetMovies(ctx context.Context) ([]Movie, error) {
 }
 
 const getMoviesSortedByVotes = `-- name: GetMoviesSortedByVotes :many
-SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_url, m.poster_path, m.status, COUNT(v.id) AS vote_count FROM movies m
+SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status, COUNT(v.id) AS vote_count FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 GROUP BY m.id
 ORDER BY vote_count DESC
@@ -56,6 +66,7 @@ type GetMoviesSortedByVotesRow struct {
 	CreatedAt  string
 	UpdatedAt  string
 	Title      string
+	TmdbID     int64
 	TmdbUrl    string
 	PosterPath string
 	Status     string
@@ -76,6 +87,7 @@ func (q *Queries) GetMoviesSortedByVotes(ctx context.Context) ([]GetMoviesSorted
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Title,
+			&i.TmdbID,
 			&i.TmdbUrl,
 			&i.PosterPath,
 			&i.Status,
@@ -95,15 +107,16 @@ func (q *Queries) GetMoviesSortedByVotes(ctx context.Context) ([]GetMoviesSorted
 }
 
 const insertMovie = `-- name: InsertMovie :one
-INSERT INTO movies (created_at, updated_at, title, tmdb_url, poster_path, status)
-VALUES (?, ?, ?, ?, ?, ?)
-RETURNING id, created_at, updated_at, title, tmdb_url, poster_path, status
+INSERT INTO movies (created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+RETURNING id, created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status
 `
 
 type InsertMovieParams struct {
 	CreatedAt  string
 	UpdatedAt  string
 	Title      string
+	TmdbID     int64
 	TmdbUrl    string
 	PosterPath string
 	Status     string
@@ -114,6 +127,7 @@ func (q *Queries) InsertMovie(ctx context.Context, arg InsertMovieParams) (Movie
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.Title,
+		arg.TmdbID,
 		arg.TmdbUrl,
 		arg.PosterPath,
 		arg.Status,
@@ -124,6 +138,7 @@ func (q *Queries) InsertMovie(ctx context.Context, arg InsertMovieParams) (Movie
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Title,
+		&i.TmdbID,
 		&i.TmdbUrl,
 		&i.PosterPath,
 		&i.Status,

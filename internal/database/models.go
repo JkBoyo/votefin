@@ -9,6 +9,7 @@ type Movie struct {
 	CreatedAt  string
 	UpdatedAt  string
 	Title      string
+	TmdbID     int64
 	TmdbUrl    string
 	PosterPath string
 	Status     string

@@ -54,10 +54,10 @@ func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
 	fmt.Println(*data)
 
 	retData := database.InsertMovieParams{
-		ID:         tmdbID,
 		CreatedAt:  now,
 		UpdatedAt:  now,
 		Title:      data.Title,
+		TmdbID:     tmdbID,
 		TmdbUrl:    fmt.Sprintf("https://www.%smovie/%d", TMDBBaseURL, data.ID),
 		PosterPath: data.PosterPath,
 		Status:     "Not ripped.",
