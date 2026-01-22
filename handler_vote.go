@@ -14,16 +14,18 @@ import (
 func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u database.User) {
 	currUserVotes, err := cfg.db.GetVotesCountPerUser(r.Context(), u.ID)
 	if err == sql.ErrNoRows {
-
+		currUserVotes = 0
 	}
 
 	err = r.ParseForm()
 	if err != nil {
 		fmt.Println("Error Parsing votes")
-		respondWithHtmlErr(w, http.StatusBadRequest, "Error parsing vote request")
+		respondWithHtmlErr(w, http.StatusBadRequest, "Error parsing vote request"+err.Error())
 	}
 
-	votedMovies := r.PostForm["votedMovies"]
+	fmt.Println(r.Form)
+
+	votedMovies := r.PostForm["votedMovie"]
 
 	voteLim := cfg.voteLimit
 
@@ -46,8 +48,16 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u data
 			MovieID:   movieId,
 		}
 		_, err = cfg.db.CreateVote(r.Context(), voteParams)
+		if err != nil {
+			respondWithHtmlErr(w, http.StatusInternalServerError, "Couldn't insert vote into db"+err.Error())
+		}
 
 	}
 
-	respondWithHTML(w, http.StatusAccepted)
+	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
+	if err != nil {
+		respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching voted on movies: "+err.Error())
+	}
+
+	respondWithHTML(w, http.StatusAccepted, templates.VotesMovieList("votedOnMovies", votedOnMovies))
 }

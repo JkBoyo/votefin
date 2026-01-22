@@ -38,8 +38,6 @@ func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
 
 	fmt.Println(resp.Status)
 
-	defer resp.Body.Close()
-
 	var data *tmdbData
 
 	respData, err := io.ReadAll(resp.Body)

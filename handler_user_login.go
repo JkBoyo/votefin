@@ -72,14 +72,21 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("token")
+		cookie, err := r.Cookie("Token")
 		if err != nil {
 			respondWithHTML(w, http.StatusAccepted, templates.Notification(err.Error()))
 			return
 		}
 		token := cookie.Value
+		if token == "" {
+			fmt.Println("No token in the cookie")
+		}
 
 		jfUser, err := jellyfin.ValidateToken(token)
+		if err != nil {
+			fmt.Println("Error validating token")
+			respondWithHtmlErr(w, http.StatusUnauthorized, ("Error authenticating user: " + err.Error()))
+		}
 
 		user, err := cfg.db.GetUserByJellyID(r.Context(), jfUser.Id)
 		if err == sql.ErrNoRows {

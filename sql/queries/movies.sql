@@ -1,5 +1,5 @@
 -- name: GetMovies :many
-SELECT created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status FROM movies;
+SELECT id, created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status FROM movies;
 
 -- name: GetMoviesSortedByVotes :many
 SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status, COUNT(v.id) AS vote_count FROM movies m

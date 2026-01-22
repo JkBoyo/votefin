@@ -14,7 +14,7 @@ import (
 func respondWithHTML(w http.ResponseWriter, code int, comp templ.Component) error {
 	w.Header().Set("Content-Type", "application-/x-www-form-urlencoded")
 	w.WriteHeader(code)
-	err := templates.BasePage(comp).Render(context.Background(), os.Stdout)
+	err := comp.Render(context.Background(), os.Stdout)
 	if err != nil {
 		respondWithHtmlErr(w, 500, err.Error())
 	}
@@ -47,7 +47,7 @@ func renderPage(cfg *apiConfig, r *http.Request, u database.User) (templ.Compone
 
 	userVotesCount, err := cfg.db.GetVotesCountPerUser(r.Context(), u.ID)
 	if err != nil {
-		//TODO: Handle errors check to see if there's an error case for no rows which should just return 0
+		userVotesCount = 0
 	}
 
 	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), u.ID)

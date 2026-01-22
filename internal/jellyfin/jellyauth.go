@@ -42,11 +42,10 @@ func addJellyfinAuthHeader(r *http.Request, token, userName string) {
 func ValidateToken(token string) (JellyfinUser, error) {
 	client := http.DefaultClient
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s/Users/Me", os.Getenv("Jellyfin_URL")), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s/Users/Me", os.Getenv("JELLYFIN_URL")), nil)
 	if err != nil {
 		return JellyfinUser{}, fmt.Errorf("Error creating request: %v", err)
 	}
-	defer req.Body.Close()
 
 	addJellyfinAuthHeader(req, token, "")
 
@@ -54,10 +53,9 @@ func ValidateToken(token string) (JellyfinUser, error) {
 	if err != nil {
 		return JellyfinUser{}, fmt.Errorf("Error performing request: %v", err)
 	}
-	if resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode < 200 && resp.StatusCode > 300 {
 		return JellyfinUser{}, JellyfinAuthError
 	}
-	defer resp.Body.Close()
 
 	respData, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -92,7 +90,6 @@ func AuthenticateUser(userName, password string, con context.Context) (JellyfinA
 
 		return JellyfinAuthResp{}, fmt.Errorf("Error creating request: %s", err.Error())
 	}
-	defer req.Body.Close()
 
 	addJellyfinAuthHeader(req, "", userName)
 
@@ -102,7 +99,6 @@ func AuthenticateUser(userName, password string, con context.Context) (JellyfinA
 	if err != nil {
 		return JellyfinAuthResp{}, fmt.Errorf("Error making the request: %s", err.Error())
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		return JellyfinAuthResp{}, JellyfinAuthError

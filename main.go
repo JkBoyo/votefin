@@ -65,7 +65,7 @@ func main() {
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
 	serveMux.HandleFunc("POST /login", apiConf.loginUser)
 	serveMux.HandleFunc("GET /loadPage", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
-	serveMux.HandleFunc("POST /vote", apiConf.voteHandler)
+	serveMux.HandleFunc("POST /vote", apiConf.AuthorizeHandler(apiConf.voteHandler))
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 	serveMux.Handle("/", templ.Handler(templates.BasePage(templates.Login())))
 	server := http.Server{
