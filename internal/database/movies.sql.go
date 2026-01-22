@@ -10,29 +10,20 @@ import (
 )
 
 const getMovies = `-- name: GetMovies :many
-SELECT created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status FROM movies
+SELECT id, created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status FROM movies
 `
 
-type GetMoviesRow struct {
-	CreatedAt  string
-	UpdatedAt  string
-	Title      string
-	TmdbID     int64
-	TmdbUrl    string
-	PosterPath string
-	Status     string
-}
-
-func (q *Queries) GetMovies(ctx context.Context) ([]GetMoviesRow, error) {
+func (q *Queries) GetMovies(ctx context.Context) ([]Movie, error) {
 	rows, err := q.db.QueryContext(ctx, getMovies)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetMoviesRow
+	var items []Movie
 	for rows.Next() {
-		var i GetMoviesRow
+		var i Movie
 		if err := rows.Scan(
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Title,
