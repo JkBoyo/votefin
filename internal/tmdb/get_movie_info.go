@@ -13,7 +13,7 @@ import (
 )
 
 var TMDBBaseURL = "themoviedb.org/"
-var TMDBImageBaseUrl = "https://image.tmdb.org/t/p/w342%s"
+var TMDBImageBaseUrl = "https://image.tmdb.org/t/p/w%s%s"
 
 type tmdbData struct {
 	ID         int64  `json:"id"`
@@ -62,17 +62,18 @@ func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
 	}
 
 	fmt.Println(retData)
-	writeImageToDisk(retData.PosterPath)
+	imWidth := os.Getenv("POSTER_IM_WIDTH")
+	writeImageToDisk(imWidth, retData.PosterPath)
 
 	return retData, nil
 }
 
-func writeImageToDisk(pp string) {
+func writeImageToDisk(imWidth, pp string) {
 	if pp == "" {
 		log.Fatal("No Poster Path provided")
 	}
 	// TODO: Better error formatting
-	imageUrl := fmt.Sprintf(TMDBImageBaseUrl, pp)
+	imageUrl := fmt.Sprintf(TMDBImageBaseUrl, imWidth, pp)
 
 	resp, err := http.DefaultClient.Get(imageUrl)
 	if err != nil {
