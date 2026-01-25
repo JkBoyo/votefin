@@ -18,7 +18,7 @@ func respondWithHTML(w http.ResponseWriter, code int, comp templ.Component) erro
 	if err != nil {
 		respondWithHtmlErr(w, 500, err.Error())
 	}
-	err = templates.BasePage(comp).Render(context.Background(), w)
+	err = comp.Render(context.Background(), w)
 	if err != nil {
 		respondWithHtmlErr(w, 500, err.Error())
 	}
@@ -50,6 +50,8 @@ func renderPage(cfg *apiConfig, r *http.Request, u database.User) (templ.Compone
 		userVotesCount = 0
 	}
 
+	userVotesLeft := cfg.voteLimit - int(userVotesCount)
+
 	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), u.ID)
 	if err != nil {
 		return nil, fmt.Errorf("Error fetching movies voted on by the user: %v", err.Error())
@@ -60,5 +62,5 @@ func renderPage(cfg *apiConfig, r *http.Request, u database.User) (templ.Compone
 		return nil, fmt.Errorf("Error fetching all movies for voting: %v", err.Error())
 	}
 
-	return templates.VotePage(votedOnMovies, int(userVotesCount), userVotedMovies, allMovies), nil
+	return templates.VotePage(votedOnMovies, userVotesLeft, userVotedMovies, allMovies), nil
 }

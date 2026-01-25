@@ -3,35 +3,6 @@ package templates
 import "www.github.com/jkboyo/votefin/internal/database"
 import "fmt"
 
-templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesCount int, userVotedMovies, allMovies []database.Movie) {
-	<div class="pageGridCont">
-		<div class="">
-			<h2>Votes</h2>
-			@VotesMovieList("moviesVotedOn", votedOnMovies)
-		</div>
-		<div class="">
-			<h2>User Votes</h2>
-			<h4>Votes Left: { userVotesCount }</h4>
-			@MovieList("moviesVotedOn", userVotedMovies)
-		</div>
-		<div id="moviesToVoteColumn">
-			<input
-				name="searchMovies"
-				type="text"
-				placeholder="Search movies to add"
-				hx-post="/searchmovies"
-				hx-target="#foundMovies"
-			/>
-			<div id="foundMovies"></div>
-			<h2>Content to Vote On</h2>
-			<form id="moviesToVoteForm" hx-post="/vote">
-				<button id="" type="submit">Submit Votes</button>
-				@MovieList("moviesToVote", allMovies)
-			</form>
-		</div>
-	</div>
-}
-
 templ BasePage(c templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -49,8 +20,42 @@ templ BasePage(c templ.Component) {
 	</html>
 }
 
-templ VotesMovieList(id string, votedOnMovies []database.GetMoviesSortedByVotesRow) {
-	<ol id={ id }>
+templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies, allMovies []database.Movie) {
+	<div class="pageGridCont">
+		<div class="">
+			<h2>Votes</h2>
+			@VotesMovieList(false, "moviesVotedOn", votedOnMovies)
+		</div>
+		<div class="">
+			<h2>User Votes</h2>
+			<h4>Votes Left: { userVotesLeftCount }</h4>
+			@MovieList(false, "userMoviesVotedOn", userVotedMovies)
+		</div>
+		<div id="moviesToVoteColumn">
+			<input
+				name="searchMovies"
+				type="text"
+				placeholder="Search movies to add"
+				hx-post="/searchmovies"
+				hx-target="#foundMovies"
+			/>
+			<div id="foundMovies"></div>
+			<h2>Content to Vote On</h2>
+			<form id="moviesToVoteForm" hx-post="/vote">
+				<button id="" type="submit">Submit Votes</button>
+				@MovieList(false, "moviesToVote", allMovies)
+			</form>
+		</div>
+	</div>
+}
+
+templ VotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesSortedByVotesRow) {
+	<ol
+		id={ id }
+		if swap {
+			hx-swap-oob="true"
+		}
+	>
 		if len(votedOnMovies) < 1 {
 			@NoMovies()
 		} else {
@@ -61,8 +66,14 @@ templ VotesMovieList(id string, votedOnMovies []database.GetMoviesSortedByVotesR
 	</ol>
 }
 
-templ MovieList(id string, allMovies []database.Movie) {
-	<ul id={ id }>
+templ MovieList(swap bool, id string, allMovies []database.Movie) {
+	<ul
+		id={ id }
+		id={ id }
+		if swap {
+			hx-swap-oob="true"
+		}
+	>
 		if len(allMovies) < 1 {
 			@NoMovies()
 		} else {

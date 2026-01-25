@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/a-h/templ"
 	"www.github.com/jkboyo/votefin/internal/database"
 	"www.github.com/jkboyo/votefin/templates"
 )
@@ -59,5 +60,15 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u data
 		respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching voted on movies: "+err.Error())
 	}
 
-	respondWithHTML(w, http.StatusAccepted, templates.VotesMovieList("votedOnMovies", votedOnMovies))
+	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), u.ID)
+	if err != nil {
+		respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching users voted on movies: "+err.Error())
+	}
+
+	respondWithHTML(w, http.StatusAccepted, templ.Join(
+		templates.VotesMovieList(true, "votedMoviesOn", votedOnMovies),
+		templates.MovieList(true, "userMoviesVotedOn", userVotedMovies),
+		templates.Notification("Vote logged"),
+	),
+	)
 }
