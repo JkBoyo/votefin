@@ -35,40 +35,40 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u data
 			http.StatusForbidden,
 			fmt.Sprintf("Too Many votes submitted. You have %d votes left", voteLim-int(currUserVotes)),
 		)
-	}
+	} else {
+		for _, movie := range votedMovies {
+			movieId, err := strconv.ParseInt(movie, 10, 64)
+			if err != nil {
+				fmt.Println("Couldn't convert", movie, "to an integer")
+				respondWithHtmlErr(w, http.StatusBadRequest, "Couldn't convert movie id to integer")
+			}
+			voteParams := database.CreateVoteParams{
+				CreatedAt: time.Now().Unix(),
+				UserID:    u.ID,
+				MovieID:   movieId,
+			}
+			_, err = cfg.db.CreateVote(r.Context(), voteParams)
+			if err != nil {
+				respondWithHtmlErr(w, http.StatusInternalServerError, "Couldn't insert vote into db"+err.Error())
+			}
 
-	for _, movie := range votedMovies {
-		movieId, err := strconv.ParseInt(movie, 10, 64)
+		}
+
+		votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
 		if err != nil {
-			fmt.Println("Couldn't convert", movie, "to an integer")
-			respondWithHtmlErr(w, http.StatusBadRequest, "Couldn't convert movie id to integer")
+			respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching voted on movies: "+err.Error())
 		}
-		voteParams := database.CreateVoteParams{
-			CreatedAt: time.Now().Unix(),
-			UserID:    u.ID,
-			MovieID:   movieId,
-		}
-		_, err = cfg.db.CreateVote(r.Context(), voteParams)
+
+		userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), u.ID)
 		if err != nil {
-			respondWithHtmlErr(w, http.StatusInternalServerError, "Couldn't insert vote into db"+err.Error())
+			respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching users voted on movies: "+err.Error())
 		}
 
+		respondWithHTML(w, http.StatusAccepted, templ.Join(
+			templates.VotesMovieList(true, "moviesVotedOn", votedOnMovies),
+			templates.UserVotesMovieList(true, "userMoviesVotedOn", userVotedMovies),
+		),
+		)
 	}
 
-	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
-	if err != nil {
-		respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching voted on movies: "+err.Error())
-	}
-
-	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), u.ID)
-	if err != nil {
-		respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching users voted on movies: "+err.Error())
-	}
-
-	respondWithHTML(w, http.StatusAccepted, templ.Join(
-		templates.VotesMovieList(true, "votedMoviesOn", votedOnMovies),
-		templates.MovieList(true, "userMoviesVotedOn", userVotedMovies),
-		templates.Notification("Vote logged"),
-	),
-	)
 }

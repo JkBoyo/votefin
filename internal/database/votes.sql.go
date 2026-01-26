@@ -34,21 +34,34 @@ func (q *Queries) CreateVote(ctx context.Context, arg CreateVoteParams) (Vote, e
 }
 
 const getMoviesByUserVotes = `-- name: GetMoviesByUserVotes :many
-SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status
+SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status, COUNT(v.id) as vote_count
 FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 WHERE v.user_id = ?
+GROUP BY m.id
 `
 
-func (q *Queries) GetMoviesByUserVotes(ctx context.Context, userID int64) ([]Movie, error) {
+type GetMoviesByUserVotesRow struct {
+	ID         int64
+	CreatedAt  string
+	UpdatedAt  string
+	Title      string
+	TmdbID     int64
+	TmdbUrl    string
+	PosterPath string
+	Status     string
+	VoteCount  int64
+}
+
+func (q *Queries) GetMoviesByUserVotes(ctx context.Context, userID int64) ([]GetMoviesByUserVotesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getMoviesByUserVotes, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Movie
+	var items []GetMoviesByUserVotesRow
 	for rows.Next() {
-		var i Movie
+		var i GetMoviesByUserVotesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
@@ -58,6 +71,7 @@ func (q *Queries) GetMoviesByUserVotes(ctx context.Context, userID int64) ([]Mov
 			&i.TmdbUrl,
 			&i.PosterPath,
 			&i.Status,
+			&i.VoteCount,
 		); err != nil {
 			return nil, err
 		}

@@ -20,7 +20,7 @@ templ BasePage(c templ.Component) {
 	</html>
 }
 
-templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies, allMovies []database.Movie) {
+templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<div class="pageGridCont">
 		<div class="">
 			<h2>Votes</h2>
@@ -29,7 +29,7 @@ templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeft
 		<div class="">
 			<h2>User Votes</h2>
 			<h4>Votes Left: { userVotesLeftCount }</h4>
-			@MovieList(false, "userMoviesVotedOn", userVotedMovies)
+			@UserVotesMovieList(false, "userMoviesVotedOn", userVotedMovies)
 		</div>
 		<div id="moviesToVoteColumn">
 			<input
@@ -41,7 +41,7 @@ templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeft
 			/>
 			<div id="foundMovies"></div>
 			<h2>Content to Vote On</h2>
-			<form id="moviesToVoteForm" hx-post="/vote">
+			<form id="moviesToVoteForm" hx-post="/vote" hx-swap="none">
 				<button id="" type="submit">Submit Votes</button>
 				@MovieList(false, "moviesToVote", allMovies)
 			</form>
@@ -61,6 +61,23 @@ templ VotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesSor
 		} else {
 			for _, movie := range votedOnMovies {
 				@votedMovie(movie)
+			}
+		}
+	</ol>
+}
+
+templ UserVotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesByUserVotesRow) {
+	<ol
+		id={ id }
+		if swap {
+			hx-swap-oob="true"
+		}
+	>
+		if len(votedOnMovies) < 1 {
+			@NoMovies()
+		} else {
+			for _, movie := range votedOnMovies {
+				@userVotedMovie(movie)
 			}
 		}
 	</ol>
@@ -105,6 +122,17 @@ templ Movie(m database.Movie) {
 }
 
 templ votedMovie(m database.GetMoviesSortedByVotesRow) {
+	<li>
+		<div class="">
+			<a href={ m.TmdbUrl } target="_blank">
+				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
+			</a>
+		</div>
+	</li>
+}
+
+templ userVotedMovie(m database.GetMoviesByUserVotesRow) {
 	<li>
 		<div class="">
 			<a href={ m.TmdbUrl } target="_blank">
