@@ -20,7 +20,7 @@ templ BasePage(c templ.Component) {
 	</html>
 }
 
-templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
+templ VotePage(isAdmin bool, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<div class="pageGridCont">
 		<div class="">
 			<h2>Votes</h2>
@@ -28,8 +28,7 @@ templ VotePage(votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeft
 		</div>
 		<div class="">
 			<h2>User Votes</h2>
-			<h4>Votes Left: { userVotesLeftCount }</h4>
-			@UserVotesMovieList(false, "userMoviesVotedOn", userVotedMovies)
+			@UserVotesMovieList(false, "userMoviesVotedOn", userVotesLeftCount, userVotedMovies)
 		</div>
 		<div id="moviesToVoteColumn">
 			<input
@@ -66,13 +65,14 @@ templ VotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesSor
 	</ol>
 }
 
-templ UserVotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesByUserVotesRow) {
+templ UserVotesMovieList(swap bool, id string, userVotesLeft int, votedOnMovies []database.GetMoviesByUserVotesRow) {
 	<ol
 		id={ id }
 		if swap {
 			hx-swap-oob="true"
 		}
 	>
+		<h4 id="currUserVotes">Votes Left: { userVotesLeft }</h4>
 		if len(votedOnMovies) < 1 {
 			@NoMovies()
 		} else {
@@ -85,7 +85,6 @@ templ UserVotesMovieList(swap bool, id string, votedOnMovies []database.GetMovie
 
 templ MovieList(swap bool, id string, allMovies []database.Movie) {
 	<ul
-		id={ id }
 		id={ id }
 		if swap {
 			hx-swap-oob="true"

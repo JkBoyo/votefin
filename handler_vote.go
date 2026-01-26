@@ -64,9 +64,11 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u data
 			respondWithHtmlErr(w, http.StatusInternalServerError, "Error fetching users voted on movies: "+err.Error())
 		}
 
+		userVotesCount, err := cfg.db.GetVotesCountPerUser(r.Context(), u.ID)
+
 		respondWithHTML(w, http.StatusAccepted, templ.Join(
 			templates.VotesMovieList(true, "moviesVotedOn", votedOnMovies),
-			templates.UserVotesMovieList(true, "userMoviesVotedOn", userVotedMovies),
+			templates.UserVotesMovieList(true, "userMoviesVotedOn", voteLim-int(userVotesCount), userVotedMovies),
 		),
 		)
 	}
