@@ -20,7 +20,7 @@ templ BasePage(c templ.Component) {
 	</html>
 }
 
-templ VotePage(isAdmin bool, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
+templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<div class="pageGridCont">
 		<div class="">
 			<h2>Votes</h2>
@@ -31,14 +31,16 @@ templ VotePage(isAdmin bool, votedOnMovies []database.GetMoviesSortedByVotesRow,
 			@UserVotesMovieList(false, "userMoviesVotedOn", userVotesLeftCount, userVotedMovies)
 		</div>
 		<div id="moviesToVoteColumn">
-			<input
-				name="searchMovies"
-				type="text"
-				placeholder="Search movies to add"
-				hx-post="/searchmovies"
-				hx-target="#foundMovies"
-			/>
-			<div id="foundMovies"></div>
+			if isAdmin == 1 {
+				<input
+					name="searchMovies"
+					type="text"
+					placeholder="Search movies to add"
+					hx-post="/searchmovies"
+					hx-target="#foundMovies"
+				/>
+				<div id="foundMovies"></div>
+			}
 			<h2>Content to Vote On</h2>
 			<form id="moviesToVoteForm" hx-post="/vote" hx-swap="none">
 				<button id="" type="submit">Submit Votes</button>

@@ -23,9 +23,6 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	passWord := r.FormValue("Password")
 
-	fmt.Println("User Name: " + userName)
-	fmt.Println("Password: " + passWord)
-
 	authResp, err := jellyfin.AuthenticateUser(userName, passWord, r.Context())
 	if err == jellyfin.JellyfinAuthError {
 		respondWithHtmlErr(w, http.StatusUnauthorized, "Invalid username or password")
@@ -36,8 +33,9 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	if err == sql.ErrNoRows {
 		currTime := time.Now().Local().String()
 		var isAdmin int64
-		if authResp.User.IsAdmin {
+		if authResp.User.Policy.IsAdministrator {
 			isAdmin = 1
+
 		} else {
 			isAdmin = 0
 		}
@@ -48,8 +46,12 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 			Username:       authResp.User.Name,
 			IsAdmin:        isAdmin,
 		}
-		fmt.Println(newUser)
+
 		user, err = cfg.db.AddUser(r.Context(), newUser)
+		if err != nil {
+			fmt.Println()
+			fmt.Println("error adding user" + err.Error())
+		}
 	}
 
 	authCookie := &http.Cookie{
@@ -92,7 +94,7 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 		if err == sql.ErrNoRows {
 			currTime := time.Now().Local().String()
 			var isAdmin int64
-			if jfUser.IsAdmin {
+			if jfUser.Policy.IsAdministrator {
 				isAdmin = 1
 			} else {
 				isAdmin = 0

@@ -16,10 +16,14 @@ var JellyfinAuthHeaderTemp string = "MediaBrowser Token=\"%s\", Client=\"Votefin
 
 var JellyfinAuthError error = errors.New("User Not Authenticated")
 
+type policy struct {
+	IsAdministrator bool `json:"IsAdministrator"`
+}
+
 type JellyfinUser struct {
-	Name    string `json:"Name"`
-	IsAdmin bool   `json:"IsAdministrator"`
-	Id      string `json:"Id"`
+	Name   string `json:"Name"`
+	Policy policy `json:"Policy"`
+	Id     string `json:"Id"`
 }
 
 type JellyfinAuthResp struct {
