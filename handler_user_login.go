@@ -77,7 +77,6 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 		cookie, err := r.Cookie("Token")
 		if err != nil {
 			respondWithHTML(w, http.StatusAccepted, templates.Notification(err.Error()))
-			return
 		}
 		token := cookie.Value
 		if token == "" {
@@ -108,6 +107,9 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 			}
 			fmt.Println(newUser)
 			user, err = cfg.db.AddUser(r.Context(), newUser)
+			if err != nil {
+				fmt.Println("error adding user: ", err.Error())
+			}
 		}
 
 		handler(w, r, user)

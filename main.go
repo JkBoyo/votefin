@@ -67,7 +67,12 @@ func main() {
 	serveMux.HandleFunc("GET /loadPage", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
 	serveMux.HandleFunc("POST /vote", apiConf.AuthorizeHandler(apiConf.voteHandler))
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
-	serveMux.Handle("/", templ.Handler(templates.BasePage(templates.Login())))
+
+	serveMux.HandleFunc("/{$}", apiConf.AuthorizeHandler(func(w http.ResponseWriter, r *http.Request, u database.User) {
+		if {
+			http.Redirect(w, r, "/login", http.StatusAccepted)
+		}
+	}))
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: serveMux,
