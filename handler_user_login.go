@@ -11,7 +11,7 @@ import (
 	"www.github.com/jkboyo/votefin/templates"
 )
 
-type authorizedHandler func(w http.ResponseWriter, r *http.Request, user database.User)
+type authorizedHandler func(w http.ResponseWriter, r *http.Request, user *database.User)
 
 func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -64,7 +64,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, authCookie)
 
-	page, err := renderPage(cfg, r, user)
+	page, err := renderPage(cfg, r, &user)
 	if err != nil {
 		respondWithHtmlErr(w, http.StatusInternalServerError, err.Error())
 	}
@@ -77,6 +77,7 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 		cookie, err := r.Cookie("Token")
 		if err != nil {
 			respondWithHTML(w, http.StatusAccepted, templates.Notification(err.Error()))
+			handler(w, r, nil)
 		}
 		token := cookie.Value
 		if token == "" {
@@ -112,6 +113,6 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 			}
 		}
 
-		handler(w, r, user)
+		handler(w, r, &user)
 	}
 }

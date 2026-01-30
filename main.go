@@ -64,15 +64,19 @@ func main() {
 	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
 	serveMux.HandleFunc("POST /login", apiConf.loginUser)
-	serveMux.HandleFunc("GET /loadPage", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
+	serveMux.HandleFunc("GET /dashboard", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
 	serveMux.HandleFunc("POST /vote", apiConf.AuthorizeHandler(apiConf.voteHandler))
+
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 
-	serveMux.HandleFunc("/{$}", apiConf.AuthorizeHandler(func(w http.ResponseWriter, r *http.Request, u database.User) {
-		if {
+	serveMux.HandleFunc("/{$}", apiConf.AuthorizeHandler(func(w http.ResponseWriter, r *http.Request, user *database.User) {
+		if user == nil {
 			http.Redirect(w, r, "/login", http.StatusAccepted)
+			return
 		}
+		http.Redirect(w, r, "/dashboard", http.StatusAccepted)
 	}))
+
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: serveMux,

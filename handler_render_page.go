@@ -17,10 +17,12 @@ func respondWithHTML(w http.ResponseWriter, code int, comp templ.Component) erro
 	err := comp.Render(context.Background(), os.Stdout)
 	if err != nil {
 		respondWithHtmlErr(w, 500, err.Error())
+		return err
 	}
 	err = comp.Render(context.Background(), w)
 	if err != nil {
 		respondWithHtmlErr(w, 500, err.Error())
+		return err
 	}
 	return nil
 }
@@ -30,16 +32,21 @@ func respondWithHtmlErr(w http.ResponseWriter, code int, errMsg string) error {
 	return respondWithHTML(w, code, errNotif)
 }
 
-func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, u database.User) {
+func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, u *database.User) {
+	if u == nil {
+		respondWithHtmlErr(w, http.StatusUnauthorized, "Not authorized to render page")
+		return
+	}
 	page, err := renderPage(cfg, r, u)
 	if err != nil {
 		respondWithHtmlErr(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	respondWithHTML(w, http.StatusAccepted, page)
 }
 
-func renderPage(cfg *apiConfig, r *http.Request, u database.User) (templ.Component, error) {
+func renderPage(cfg *apiConfig, r *http.Request, u *database.User) (templ.Component, error) {
 	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
 	if err != nil {
 		return nil, fmt.Errorf("Error fetching movies voted on: %v", err.Error())
