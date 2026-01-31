@@ -29,7 +29,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	} else if err != nil {
 		respondWithHtmlErr(w, http.StatusInternalServerError, "Error setting authentication")
 	}
-	user, err := cfg.db.GetUserByJellyID(r.Context(), authResp.User.Id)
+	_, err = cfg.db.GetUserByJellyID(r.Context(), authResp.User.Id)
 	if err == sql.ErrNoRows {
 		currTime := time.Now().Local().String()
 		var isAdmin int64
@@ -47,7 +47,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 			IsAdmin:        isAdmin,
 		}
 
-		user, err = cfg.db.AddUser(r.Context(), newUser)
+		_, err = cfg.db.AddUser(r.Context(), newUser)
 		if err != nil {
 			fmt.Println()
 			fmt.Println("error adding user" + err.Error())
@@ -64,12 +64,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, authCookie)
 
-	page, err := renderPage(cfg, r, &user)
-	if err != nil {
-		respondWithHtmlErr(w, http.StatusInternalServerError, err.Error())
-	}
-
-	respondWithHTML(w, http.StatusAccepted, page)
+	http.Redirect(w, r, "/dashboard", http.StatusAccepted)
 }
 
 func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFunc {

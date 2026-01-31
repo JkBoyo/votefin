@@ -8,14 +8,12 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 
 	"www.github.com/jkboyo/votefin/internal/database"
 	"www.github.com/jkboyo/votefin/internal/tmdb"
 	"www.github.com/jkboyo/votefin/internal/trie"
-	"www.github.com/jkboyo/votefin/templates"
 )
 
 type apiConfig struct {
