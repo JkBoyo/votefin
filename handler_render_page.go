@@ -34,7 +34,7 @@ func respondWithHtmlErr(w http.ResponseWriter, code int, errMsg string) error {
 
 func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, u *database.User) {
 	if u == nil {
-		respondWithHtmlErr(w, http.StatusUnauthorized, "Not authorized to render page")
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 	page, err := renderPage(cfg, r, u)
@@ -43,7 +43,7 @@ func (cfg *apiConfig) renderPageHandler(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	respondWithHTML(w, http.StatusAccepted, page)
+	page.Render(r.Context(), w)
 }
 
 func renderPage(cfg *apiConfig, r *http.Request, u *database.User) (templ.Component, error) {

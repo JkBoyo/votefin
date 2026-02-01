@@ -8,7 +8,6 @@ import (
 
 	"www.github.com/jkboyo/votefin/internal/database"
 	"www.github.com/jkboyo/votefin/internal/jellyfin"
-	"www.github.com/jkboyo/votefin/templates"
 )
 
 type authorizedHandler func(w http.ResponseWriter, r *http.Request, user *database.User)
@@ -17,6 +16,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println("Error parsing forms")
+		return
 	}
 
 	userName := r.FormValue("Username")
@@ -60,19 +60,22 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 		Secure:   true,
 		HttpOnly: true,
 		SameSite: 2,
+		Path:     "/",
 	}
 
 	http.SetCookie(w, authCookie)
 
-	http.Redirect(w, r, "/dashboard", http.StatusAccepted)
+	http.Redirect(w, r, "/dashboard", http.StatusFound)
 }
 
 func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.Cookies())
 		cookie, err := r.Cookie("Token")
 		if err != nil {
-			respondWithHTML(w, http.StatusAccepted, templates.Notification(err.Error()))
 			handler(w, r, nil)
+			fmt.Println("Error getting cookie: " + err.Error())
+			return
 		}
 		token := cookie.Value
 		if token == "" {
@@ -82,7 +85,7 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 		jfUser, err := jellyfin.ValidateToken(token)
 		if err != nil {
 			fmt.Println("Error validating token")
-			respondWithHtmlErr(w, http.StatusUnauthorized, ("Error authenticating user: " + err.Error()))
+			return
 		}
 
 		user, err := cfg.db.GetUserByJellyID(r.Context(), jfUser.Id)

@@ -8,12 +8,14 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 
 	"www.github.com/jkboyo/votefin/internal/database"
 	"www.github.com/jkboyo/votefin/internal/tmdb"
 	"www.github.com/jkboyo/votefin/internal/trie"
+	"www.github.com/jkboyo/votefin/templates"
 )
 
 type apiConfig struct {
@@ -62,17 +64,24 @@ func main() {
 	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
 	serveMux.HandleFunc("POST /login", apiConf.loginUser)
-	serveMux.HandleFunc("GET /dashboard", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
 	serveMux.HandleFunc("POST /vote", apiConf.AuthorizeHandler(apiConf.voteHandler))
+
+	serveMux.Handle("GET /login", *templ.Handler(templates.BasePage(templates.Login())))
+	serveMux.HandleFunc("GET /dashboard", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
 
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 
 	serveMux.HandleFunc("/{$}", apiConf.AuthorizeHandler(func(w http.ResponseWriter, r *http.Request, user *database.User) {
+		fmt.Println(user)
 		if user == nil {
-			http.Redirect(w, r, "/login", http.StatusAccepted)
+			fmt.Println(user)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			fmt.Println("going to login")
 			return
 		}
-		http.Redirect(w, r, "/dashboard", http.StatusAccepted)
+		fmt.Println(user)
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		fmt.Println("Going to dashboard")
 	}))
 
 	server := http.Server{
