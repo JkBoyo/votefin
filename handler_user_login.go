@@ -12,6 +12,17 @@ import (
 
 type authorizedHandler func(w http.ResponseWriter, r *http.Request, user *database.User)
 
+func (cfg *apiConfig) logoutUser(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("Token")
+	if err != nil {
+		return
+	}
+
+	cookie.MaxAge = -10
+	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
 func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {

@@ -22,6 +22,9 @@ templ BasePage(c templ.Component) {
 
 templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<div class="pageGridCont">
+		<form action="/logout" method="POST">
+			<button type="submit">Logout</button>
+		</form>
 		<div class="">
 			<h2>Votes</h2>
 			@VotesMovieList(false, "moviesVotedOn", votedOnMovies)
