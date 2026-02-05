@@ -130,7 +130,7 @@ templ votedMovie(m database.GetMoviesSortedByVotesRow) {
 		<div class="">
 			<a href={ m.TmdbUrl } target="_blank">
 				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
-				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
+				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", int64(m.TotalVoteCount.Float64), m.Title) } </label>
 			</a>
 		</div>
 	</li>
@@ -144,5 +144,6 @@ templ userVotedMovie(m database.GetMoviesByUserVotesRow) {
 				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
 			</a>
 		</div>
+		<input type="checkbox" id={ m.Title } name="votedMovie" value={ fmt.Sprintf("%d", m.ID) }/>
 	</li>
 }

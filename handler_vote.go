@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -19,7 +20,7 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u *dat
 	}
 	currUserVotes, err := cfg.db.GetVotesCountPerUser(r.Context(), u.ID)
 	if err == sql.ErrNoRows {
-		currUserVotes = 0
+		slog.Warn("No rows returned", "error", err)
 	}
 
 	err = r.ParseForm()
@@ -34,10 +35,10 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u *dat
 
 	voteLim := cfg.voteLimit
 
-	if len(votedMovies)+int(currUserVotes) > voteLim { //TODO: when implementing roles apply role based multiplier
+	if len(votedMovies)+int(currUserVotes.Float64) > voteLim { //TODO: when implementing roles apply role based multiplier
 		respondWithHtmlErr(w,
 			http.StatusForbidden,
-			fmt.Sprintf("Too Many votes submitted. You have %d votes left", voteLim-int(currUserVotes)),
+			fmt.Sprintf("Too Many votes submitted. You have %d votes left", voteLim-int(currUserVotes.Float64)),
 		)
 		return
 	}
@@ -48,6 +49,7 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u *dat
 			fmt.Println("Couldn't convert", movie, "to an integer")
 			respondWithHtmlErr(w, http.StatusBadRequest, "Couldn't convert movie id to integer")
 		}
+		//TODO: Implement verifying if the vote for said movie exists or not.
 		voteParams := database.CreateVoteParams{
 			CreatedAt: time.Now().Unix(),
 			UserID:    u.ID,
@@ -74,8 +76,7 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, u *dat
 
 	respondWithHTML(w, http.StatusAccepted, templ.Join(
 		templates.VotesMovieList(true, "moviesVotedOn", votedOnMovies),
-		templates.UserVotesMovieList(true, "userMoviesVotedOn", voteLim-int(userVotesCount), userVotedMovies),
+		templates.UserVotesMovieList(true, "userMoviesVotedOn", voteLim-int(userVotesCount.Float64), userVotedMovies),
 	),
 	)
-
 }

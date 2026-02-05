@@ -29,4 +29,5 @@ type Vote struct {
 	CreatedAt int64
 	UserID    int64
 	MovieID   int64
+	VoteCount int64
 }

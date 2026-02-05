@@ -54,10 +54,10 @@ func renderPage(cfg *apiConfig, r *http.Request, u *database.User) (templ.Compon
 
 	userVotesCount, err := cfg.db.GetVotesCountPerUser(r.Context(), u.ID)
 	if err != nil {
-		userVotesCount = 0
+		fmt.Println("get votecount failed: " + err.Error())
 	}
 
-	userVotesLeft := cfg.voteLimit - int(userVotesCount)
+	userVotesLeft := cfg.voteLimit - int(userVotesCount.Float64)
 
 	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), u.ID)
 	if err != nil {

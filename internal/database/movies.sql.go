@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const getMovies = `-- name: GetMovies :many
@@ -46,22 +47,22 @@ func (q *Queries) GetMovies(ctx context.Context) ([]Movie, error) {
 }
 
 const getMoviesSortedByVotes = `-- name: GetMoviesSortedByVotes :many
-SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status, COUNT(v.id) AS vote_count FROM movies m
+SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status, SUM(v.vote_count) as total_vote_count FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 GROUP BY m.id
-ORDER BY vote_count DESC
+ORDER BY total_vote_count DESC
 `
 
 type GetMoviesSortedByVotesRow struct {
-	ID         int64
-	CreatedAt  string
-	UpdatedAt  string
-	Title      string
-	TmdbID     int64
-	TmdbUrl    string
-	PosterPath string
-	Status     string
-	VoteCount  int64
+	ID             int64
+	CreatedAt      string
+	UpdatedAt      string
+	Title          string
+	TmdbID         int64
+	TmdbUrl        string
+	PosterPath     string
+	Status         string
+	TotalVoteCount sql.NullFloat64
 }
 
 func (q *Queries) GetMoviesSortedByVotes(ctx context.Context) ([]GetMoviesSortedByVotesRow, error) {
@@ -82,7 +83,7 @@ func (q *Queries) GetMoviesSortedByVotes(ctx context.Context) ([]GetMoviesSorted
 			&i.TmdbUrl,
 			&i.PosterPath,
 			&i.Status,
-			&i.VoteCount,
+			&i.TotalVoteCount,
 		); err != nil {
 			return nil, err
 		}

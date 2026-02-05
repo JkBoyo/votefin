@@ -7,38 +7,45 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createVote = `-- name: CreateVote :one
-INSERT INTO votes (created_at, user_id, movie_id)
-VALUES (?, ?, ?)
-RETURNING id, created_at, user_id, movie_id
+INSERT INTO votes (created_at, user_id, movie_id, vote_count)
+VALUES (?, ?, ?, ?)
+RETURNING id, created_at, user_id, movie_id, vote_count
 `
 
 type CreateVoteParams struct {
 	CreatedAt int64
 	UserID    int64
 	MovieID   int64
+	VoteCount int64
 }
 
 func (q *Queries) CreateVote(ctx context.Context, arg CreateVoteParams) (Vote, error) {
-	row := q.db.QueryRowContext(ctx, createVote, arg.CreatedAt, arg.UserID, arg.MovieID)
+	row := q.db.QueryRowContext(ctx, createVote,
+		arg.CreatedAt,
+		arg.UserID,
+		arg.MovieID,
+		arg.VoteCount,
+	)
 	var i Vote
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UserID,
 		&i.MovieID,
+		&i.VoteCount,
 	)
 	return i, err
 }
 
 const getMoviesByUserVotes = `-- name: GetMoviesByUserVotes :many
-SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status, COUNT(v.id) as vote_count
+SELECT m.id, m.created_at, m.updated_at, m.title, m.tmdb_id, m.tmdb_url, m.poster_path, m.status, v.vote_count
 FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 WHERE v.user_id = ?
-GROUP BY m.id
 `
 
 type GetMoviesByUserVotesRow struct {
@@ -117,13 +124,13 @@ func (q *Queries) GetUsersByMoveisVoted(ctx context.Context, movieID int64) ([]s
 }
 
 const getVotesCountPerUser = `-- name: GetVotesCountPerUser :one
-SELECT COUNT(id) FROM votes
+SELECT SUM(vote_count) FROM votes
 WHERE user_id = ?
 `
 
-func (q *Queries) GetVotesCountPerUser(ctx context.Context, userID int64) (int64, error) {
+func (q *Queries) GetVotesCountPerUser(ctx context.Context, userID int64) (sql.NullFloat64, error) {
 	row := q.db.QueryRowContext(ctx, getVotesCountPerUser, userID)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var sum sql.NullFloat64
+	err := row.Scan(&sum)
+	return sum, err
 }
