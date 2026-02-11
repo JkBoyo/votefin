@@ -67,6 +67,7 @@ func main() {
 	serveMux.HandleFunc("POST /logout", apiConf.logoutUser)
 
 	serveMux.HandleFunc("POST /vote", apiConf.AuthorizeHandler(apiConf.voteHandler))
+	serveMux.HandleFunc("POST /removevote", apiConf.AuthorizeHandler(apiConf.voteRemovalHandler))
 
 	serveMux.Handle("GET /login", *templ.Handler(templates.BasePage(templates.Login())))
 	serveMux.HandleFunc("GET /dashboard", apiConf.AuthorizeHandler(apiConf.renderPageHandler))

@@ -1,6 +1,6 @@
 -- name: CreateVote :one
-INSERT INTO votes (created_at, user_id, movie_id, vote_count)
-VALUES (?, ?, ?, ?)
+INSERT INTO votes (created_at, updated_at, user_id, movie_id, vote_count)
+VALUES (?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetMoviesByUserVotes :many
@@ -18,3 +18,13 @@ WHERE v.movie_id = ?;
 -- name: GetVotesCountPerUser :one
 SELECT SUM(vote_count) FROM votes
 WHERE user_id = ?;
+
+-- name: CheckMovieVotes :one
+SELECT v.id, v.vote_count
+FROM votes v
+WHERE v.movie_id = ? AND v.user_id = ?;
+
+-- name: UpdateVoteCount :exec
+UPDATE votes
+SET updated_at= ?, vote_count = ?
+WHERE id = ?;

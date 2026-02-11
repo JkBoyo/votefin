@@ -10,14 +10,38 @@ import (
 	"database/sql"
 )
 
+const checkMovieVotes = `-- name: CheckMovieVotes :one
+SELECT v.id, v.vote_count
+FROM votes v
+WHERE v.movie_id = ? AND v.user_id = ?
+`
+
+type CheckMovieVotesParams struct {
+	MovieID int64
+	UserID  int64
+}
+
+type CheckMovieVotesRow struct {
+	ID        int64
+	VoteCount int64
+}
+
+func (q *Queries) CheckMovieVotes(ctx context.Context, arg CheckMovieVotesParams) (CheckMovieVotesRow, error) {
+	row := q.db.QueryRowContext(ctx, checkMovieVotes, arg.MovieID, arg.UserID)
+	var i CheckMovieVotesRow
+	err := row.Scan(&i.ID, &i.VoteCount)
+	return i, err
+}
+
 const createVote = `-- name: CreateVote :one
-INSERT INTO votes (created_at, user_id, movie_id, vote_count)
-VALUES (?, ?, ?, ?)
-RETURNING id, created_at, user_id, movie_id, vote_count
+INSERT INTO votes (created_at, updated_at, user_id, movie_id, vote_count)
+VALUES (?, ?, ?, ?, ?)
+RETURNING id, created_at, updated_at, user_id, movie_id, vote_count
 `
 
 type CreateVoteParams struct {
 	CreatedAt int64
+	UpdatedAt int64
 	UserID    int64
 	MovieID   int64
 	VoteCount int64
@@ -26,6 +50,7 @@ type CreateVoteParams struct {
 func (q *Queries) CreateVote(ctx context.Context, arg CreateVoteParams) (Vote, error) {
 	row := q.db.QueryRowContext(ctx, createVote,
 		arg.CreatedAt,
+		arg.UpdatedAt,
 		arg.UserID,
 		arg.MovieID,
 		arg.VoteCount,
@@ -34,6 +59,7 @@ func (q *Queries) CreateVote(ctx context.Context, arg CreateVoteParams) (Vote, e
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.UserID,
 		&i.MovieID,
 		&i.VoteCount,
@@ -133,4 +159,21 @@ func (q *Queries) GetVotesCountPerUser(ctx context.Context, userID int64) (sql.N
 	var sum sql.NullFloat64
 	err := row.Scan(&sum)
 	return sum, err
+}
+
+const updateVoteCount = `-- name: UpdateVoteCount :exec
+UPDATE votes
+SET updated_at= ?, vote_count = ?
+WHERE id = ?
+`
+
+type UpdateVoteCountParams struct {
+	UpdatedAt int64
+	VoteCount int64
+	ID        int64
+}
+
+func (q *Queries) UpdateVoteCount(ctx context.Context, arg UpdateVoteCountParams) error {
+	_, err := q.db.ExecContext(ctx, updateVoteCount, arg.UpdatedAt, arg.VoteCount, arg.ID)
+	return err
 }

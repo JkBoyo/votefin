@@ -31,7 +31,10 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 		</div>
 		<div class="">
 			<h2>User Votes</h2>
-			@UserVotesMovieList(false, "userMoviesVotedOn", userVotesLeftCount, userVotedMovies)
+			<form id="moviesToUnvoteForm" hx-post="/removevote" hx-swap="none">
+				<button id="" type="submit">Remove Votes</button>
+				@UserVotesMovieList(false, "userMoviesVotedOn", userVotesLeftCount, userVotedMovies)
+			</form>
 		</div>
 		<div id="moviesToVoteColumn">
 			if isAdmin == 1 {
@@ -63,8 +66,15 @@ templ VotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesSor
 		if len(votedOnMovies) < 1 {
 			@NoMovies()
 		} else {
+			{{ displayedMovies := 0 }}
 			for _, movie := range votedOnMovies {
-				@votedMovie(movie)
+				if movie.TotalVoteCount.Float64 > 0 {
+					@votedMovie(movie)
+					{{ displayedMovies += 1 }}
+				}
+			}
+			if displayedMovies == 0 {
+				@NoMovies()
 			}
 		}
 	</ol>
@@ -81,8 +91,15 @@ templ UserVotesMovieList(swap bool, id string, userVotesLeft int, votedOnMovies 
 		if len(votedOnMovies) < 1 {
 			@NoMovies()
 		} else {
+			{{ displayedMovies := 0 }}
 			for _, movie := range votedOnMovies {
-				@userVotedMovie(movie)
+				if movie.VoteCount > 0 {
+					@userVotedMovie(movie)
+					{{ displayedMovies += 1 }}
+				}
+			}
+			if displayedMovies == 0 {
+				@NoMovies()
 			}
 		}
 	</ol>

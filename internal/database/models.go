@@ -27,6 +27,7 @@ type User struct {
 type Vote struct {
 	ID        int64
 	CreatedAt int64
+	UpdatedAt int64
 	UserID    int64
 	MovieID   int64
 	VoteCount int64
