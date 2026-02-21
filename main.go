@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -61,23 +62,27 @@ func main() {
 
 	assets := http.FileServer(http.Dir("./assets/static/"))
 
+	serveMux.Handle("/admin/", http.StripPrefix("/admin", apiConf.AuthorizeMiddleWare(CheckIsAdmin(serveMux))))
+
 	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
 	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
-	serveMux.HandleFunc("POST /login", apiConf.loginUser)
-	serveMux.HandleFunc("POST /logout", apiConf.logoutUser)
 
-	serveMux.HandleFunc("POST /vote", apiConf.AuthorizeHandler(apiConf.voteHandler))
-	serveMux.HandleFunc("POST /removevote", apiConf.AuthorizeHandler(apiConf.voteRemovalHandler))
+	serveMux.Handle("POST /login", http.HandlerFunc(apiConf.loginUser))
+	serveMux.Handle("POST /logout", http.HandlerFunc(apiConf.logoutUser))
+
+	serveMux.Handle("POST /vote", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.voteHandler)))
+	serveMux.Handle("POST /removevote", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.voteRemovalHandler)))
 
 	serveMux.Handle("GET /login", *templ.Handler(templates.BasePage(templates.Login())))
-	serveMux.HandleFunc("GET /dashboard", apiConf.AuthorizeHandler(apiConf.renderPageHandler))
+	serveMux.Handle("GET /dashboard", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.renderPageHandler)))
 
 	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
 
-	serveMux.HandleFunc("/{$}", apiConf.AuthorizeHandler(func(w http.ResponseWriter, r *http.Request, user *database.User) {
-		fmt.Println(user)
-		if user == nil {
-			fmt.Println(user)
+	// Hande the root path so that it redirects based on the users cookie
+	serveMux.Handle("/{$}", apiConf.AuthorizeMiddleWare(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(userContextKey).(*database.User)
+		if !ok {
+			slog.Info("Couldn't find user redirecting to login page")
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			fmt.Println("going to login")
 			return
@@ -85,7 +90,7 @@ func main() {
 		fmt.Println(user)
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 		fmt.Println("Going to dashboard")
-	}))
+	})))
 
 	server := http.Server{
 		Addr:    ":8080",

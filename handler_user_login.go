@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -79,12 +81,18 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", http.StatusFound)
 }
 
-func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+type ContextKey string
+
+const (
+	userContextKey ContextKey = "user"
+)
+
+func (cfg *apiConfig) AuthorizeMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.Cookies())
 		cookie, err := r.Cookie("Token")
 		if err != nil {
-			handler(w, r, nil)
+			next.ServeHTTP(w, r)
 			fmt.Println("Error getting cookie: " + err.Error())
 			return
 		}
@@ -122,6 +130,31 @@ func (cfg *apiConfig) AuthorizeHandler(handler authorizedHandler) http.HandlerFu
 			}
 		}
 
-		handler(w, r, &user)
-	}
+		con := context.WithValue(r.Context(), userContextKey, &user)
+
+		next.ServeHTTP(w, r.WithContext(con))
+	},
+	)
+}
+
+func CheckIsAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("hitting admin endpoint")
+		fmt.Println(r.Context())
+		user, ok := r.Context().Value(userContextKey).(*database.User)
+		fmt.Println(user)
+		if !ok {
+			respondWithHtmlErr(w, http.StatusInternalServerError, "User not found")
+			slog.Error("error user not found in request context")
+			return
+		}
+
+		if user.IsAdmin == 0 {
+			respondWithHtmlErr(w, http.StatusForbidden, "User unauthorized")
+			slog.Warn("Non admin user hitting admin endpoint", "username", user.Username, "userid", user.JellyfinUserID)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

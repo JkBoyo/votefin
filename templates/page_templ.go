@@ -90,7 +90,7 @@ func VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow,
 			return templ_7745c5c3_Err
 		}
 		if isAdmin == 1 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<input name=\"searchMovies\" type=\"text\" placeholder=\"Search movies to add\" hx-post=\"/searchmovies\" hx-target=\"#foundMovies\"><div id=\"foundMovies\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<input name=\"searchMovies\" type=\"text\" placeholder=\"Search movies to add\" hx-post=\"/admin/searchmovies\" hx-target=\"#foundMovies\"><div id=\"foundMovies\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

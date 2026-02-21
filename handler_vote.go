@@ -13,8 +13,9 @@ import (
 	"www.github.com/jkboyo/votefin/templates"
 )
 
-func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, user *database.User) {
-	if user == nil {
+func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(userContextKey).(*database.User)
+	if !ok {
 		respondWithHtmlErr(w, http.StatusUnauthorized, "Not authorized to vote")
 		return
 	}
@@ -48,8 +49,9 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request, user *
 	updateVotesPage(cfg, r, w, user, currUserVotes)
 }
 
-func (cfg *apiConfig) voteRemovalHandler(w http.ResponseWriter, r *http.Request, user *database.User) {
-	if user == nil {
+func (cfg *apiConfig) voteRemovalHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(userContextKey).(*database.User)
+	if !ok {
 		respondWithHtmlErr(w, http.StatusUnauthorized, "Not authorized to vote")
 		return
 	}
