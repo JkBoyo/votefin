@@ -4,6 +4,7 @@ import (
 	"errors"
 	"maps"
 	"slices"
+	"strings"
 )
 
 var (
@@ -27,6 +28,7 @@ type Obj struct {
 }
 
 type Movie struct {
+	Title      string
 	ID         int
 	Popularity float32
 }
@@ -43,7 +45,8 @@ func NewTrie() *Trie {
 
 func (t *Trie) Insert(obj Obj) {
 	curNode := t.Root
-	for _, char := range obj.Str {
+	simpObjStr := reduceTrieStr(obj.Str)
+	for _, char := range simpObjStr {
 		nextNode, exists := curNode.Children[char]
 		if exists {
 			curNode = nextNode
@@ -56,13 +59,14 @@ func (t *Trie) Insert(obj Obj) {
 			curNode = newNode
 		}
 	}
-	curNode.Movies = append(curNode.Movies, Movie{ID: obj.Val, Popularity: obj.Popularity})
+	curNode.Movies = append(curNode.Movies, Movie{Title: obj.Str, ID: obj.Val, Popularity: obj.Popularity})
 	curNode.IsNameEnd = true
 }
 
 func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 	curNode := t.Root
-	for _, char := range pref {
+	simpPref := reduceTrieStr(pref)
+	for _, char := range simpPref {
 		nextNode, exists := curNode.Children[char]
 		if !exists {
 			return []Obj{}, ErrNoMatch
@@ -73,7 +77,7 @@ func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
 	retObjs := searchLevel(curNode, pref)
 	if curNode.IsNameEnd {
 		for _, movie := range curNode.Movies {
-			retObjs = append(retObjs, Obj{pref, movie.ID, movie.Popularity})
+			retObjs = append(retObjs, Obj{movie.Title, movie.ID, movie.Popularity})
 		}
 	}
 
@@ -92,7 +96,7 @@ func searchLevel(currNode *trieNode, currPrefix string) []Obj {
 	for k := range keys {
 		if currNode.Children[k].IsNameEnd {
 			for _, movie := range currNode.Children[k].Movies {
-				objs = append(objs, Obj{currPrefix + string(k), movie.ID, movie.Popularity})
+				objs = append(objs, Obj{movie.Title, movie.ID, movie.Popularity})
 			}
 		}
 		if currNode.Children[k].Children != nil {
@@ -100,4 +104,17 @@ func searchLevel(currNode *trieNode, currPrefix string) []Obj {
 		}
 	}
 	return objs
+}
+
+func reduceTrieStr(str string) string {
+	lowerStr := strings.ToLower(str)
+	spaceLessStr := strings.ReplaceAll(lowerStr, " ", "")
+	stopWordLessStr := spaceLessStr
+	// Remove all stop words defined in this list
+	stopWords := []string{"the", "and", "of", ":"}
+	for _, word := range stopWords {
+		stopWordLessStr = strings.ReplaceAll(stopWordLessStr, word, "")
+	}
+
+	return stopWordLessStr
 }

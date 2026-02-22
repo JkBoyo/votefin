@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"www.github.com/jkboyo/votefin/internal/trie"
 
@@ -47,6 +48,13 @@ func InitTMDBTrie() (*trie.Trie, error) {
 			Str:        newObj.OriginalTitle,
 			Val:        newObj.ID,
 			Popularity: newObj.Popularity,
+		}
+		popLimit, err := strconv.ParseFloat(os.Getenv("POPULARITY_LIMIT"), 64)
+		if err != nil {
+			popLimit = 0
+		}
+		if trieObj.Popularity < float32(popLimit) {
+			continue
 		}
 		tmdbTrie.Insert(trieObj)
 	}
