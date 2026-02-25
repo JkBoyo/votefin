@@ -46,7 +46,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = cfg.db.GetUserByJellyID(r.Context(), authResp.User.Id)
 	if err == sql.ErrNoRows {
-		currTime := time.Now().Local().String()
+		currTime := time.Now().Unix()
 		var isAdmin int64
 		if authResp.User.Policy.IsAdministrator {
 			isAdmin = 1
@@ -111,7 +111,7 @@ func (cfg *apiConfig) AuthorizeMiddleWare(next http.Handler) http.Handler {
 
 		user, err := cfg.db.GetUserByJellyID(r.Context(), jfUser.Id)
 		if err == sql.ErrNoRows {
-			currTime := time.Now().Local().String()
+			currTime := time.Now().Unix()
 			var isAdmin int64
 			if jfUser.Policy.IsAdministrator {
 				isAdmin = 1

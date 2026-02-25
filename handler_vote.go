@@ -43,7 +43,7 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, movie := range votedMovies {
-		currUserVotes, err = updateVotes(w, r, user, cfg, currUserVotes, movie, +1)
+		currUserVotes, err = updateVotes(r, user, cfg, currUserVotes, movie, +1)
 	}
 
 	updateVotesPage(cfg, r, w, user, currUserVotes)
@@ -81,17 +81,17 @@ func (cfg *apiConfig) voteRemovalHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	for _, movie := range unVotedMovies {
-		currUserVotes, err = updateVotes(w, r, user, cfg, currUserVotes, movie, -1)
+		currUserVotes, err = updateVotes(r, user, cfg, currUserVotes, movie, -1)
 	}
 
 	updateVotesPage(cfg, r, w, user, currUserVotes)
 }
 
-func updateVotes(w http.ResponseWriter, r *http.Request, user *database.User, cfg *apiConfig, currUserVotes sql.NullFloat64, movie string, change int64) (sql.NullFloat64, error) {
+func updateVotes(r *http.Request, user *database.User, cfg *apiConfig, currUserVotes sql.NullFloat64, movie string, change int64) (sql.NullFloat64, error) {
 	movieId, err := strconv.ParseInt(movie, 10, 64)
 	if err != nil {
-		fmt.Println("Couldn't convert", movie, "to an integer")
-		respondWithHtmlErr(w, http.StatusBadRequest, "Couldn't convert movie id to integer")
+		slog.Error("Error parsing movie id", "error", err)
+		return sql.NullFloat64{}, err
 	}
 	checkMovie := database.CheckMovieVotesParams{
 		UserID:  user.ID,
@@ -107,8 +107,8 @@ func updateVotes(w http.ResponseWriter, r *http.Request, user *database.User, cf
 		}
 		_, err = cfg.db.CreateVote(r.Context(), voteParams)
 		if err != nil {
-			respondWithHtmlErr(w, http.StatusInternalServerError, "Couldn't insert vote into db"+err.Error())
 			slog.Error("Error creating vote from vote handler", "error", err)
+			return sql.NullFloat64{}, err
 		}
 
 		currUserVotes.Float64 += float64(change)
@@ -126,6 +126,7 @@ func updateVotes(w http.ResponseWriter, r *http.Request, user *database.User, cf
 		err = cfg.db.UpdateVoteCount(r.Context(), updateVote)
 		if err != nil {
 			slog.Error("Error updating votecount to add more votes", "error", err)
+			return sql.NullFloat64{}, err
 		}
 		currUserVotes.Float64 += float64(change)
 		return currUserVotes, nil
@@ -145,9 +146,16 @@ func updateVotesPage(cfg *apiConfig, r *http.Request, w http.ResponseWriter, use
 		return
 	}
 
+	allMovies, err := cfg.db.GetMovies(r.Context())
+	if err != nil {
+		slog.Error("Error getting user voted movies sorted by votes", "error", err)
+		return
+	}
+
 	respondWithHTML(w, http.StatusAccepted, templ.Join(
-		templates.VotesMovieList(true, "moviesVotedOn", votedOnMovies),
-		templates.UserVotesMovieList(true, "userMoviesVotedOn", cfg.voteLimit-int(currUserVotes.Float64), userVotedMovies),
+		templates.VotesMovieList(user.IsAdmin, true, votedOnMovies),
+		templates.UserVotesMovieList(true, cfg.voteLimit-int(currUserVotes.Float64), userVotedMovies),
+		templates.MovieList(true, allMovies),
 	),
 	)
 }
