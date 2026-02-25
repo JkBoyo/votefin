@@ -23,7 +23,7 @@ type tmdbData struct {
 
 func FetchMovieInfo(tmdbID int64) (database.InsertMovieParams, error) {
 	authHeader := fmt.Sprintf("Bearer %s", os.Getenv("TMDB_API_KEY"))
-	now := time.Now().Local().GoString()
+	now := time.Now().Unix()
 	movieURL := fmt.Sprintf("https://api.%s3/movie/%d", TMDBBaseURL, tmdbID)
 	infoReq, err := http.NewRequest("GET", movieURL, nil)
 	if err != nil {

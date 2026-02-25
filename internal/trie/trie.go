@@ -36,7 +36,8 @@ type Movie struct {
 func NewTrie() *Trie {
 	return &Trie{
 		Root: &trieNode{
-			Children:  map[rune]*trieNode{},
+			Children: map[rune]*trieNode{},
+			//TODO: Size balloning due to slice replace with a map
 			Movies:    []Movie{},
 			IsNameEnd: false,
 		},
@@ -111,6 +112,7 @@ func reduceTrieStr(str string) string {
 	spaceLessStr := strings.ReplaceAll(lowerStr, " ", "")
 	stopWordLessStr := spaceLessStr
 	// Remove all stop words defined in this list
+	// Stop words need to use regex to make sure things are correctly
 	stopWords := []string{"the", "and", "of", ":"}
 	for _, word := range stopWords {
 		stopWordLessStr = strings.ReplaceAll(stopWordLessStr, word, "")
