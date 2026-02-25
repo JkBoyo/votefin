@@ -10,9 +10,8 @@ import (
 
 	"www.github.com/jkboyo/votefin/internal/database"
 	"www.github.com/jkboyo/votefin/internal/jellyfin"
+	"www.github.com/jkboyo/votefin/templates"
 )
-
-type authorizedHandler func(w http.ResponseWriter, r *http.Request, user *database.User)
 
 func (cfg *apiConfig) logoutUser(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("Token")
@@ -38,9 +37,12 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	authResp, err := jellyfin.AuthenticateUser(userName, passWord, r.Context())
 	if err == jellyfin.JellyfinAuthError {
-		respondWithHtmlErr(w, http.StatusUnauthorized, "Invalid username or password")
+		respondWithHTML(w, http.StatusAccepted, templates.Notification("Invalid username or password"))
+		slog.Warn("invalid username or password entered")
+		return
 	} else if err != nil {
 		respondWithHtmlErr(w, http.StatusInternalServerError, "Error setting authentication")
+		return
 	}
 	_, err = cfg.db.GetUserByJellyID(r.Context(), authResp.User.Id)
 	if err == sql.ErrNoRows {
