@@ -55,8 +55,8 @@ ORDER BY total_vote_count DESC
 
 type GetMoviesSortedByVotesRow struct {
 	ID             int64
-	CreatedAt      string
-	UpdatedAt      string
+	CreatedAt      int64
+	UpdatedAt      int64
 	Title          string
 	TmdbID         int64
 	TmdbUrl        string
@@ -105,8 +105,8 @@ RETURNING id, created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, sta
 `
 
 type InsertMovieParams struct {
-	CreatedAt  string
-	UpdatedAt  string
+	CreatedAt  int64
+	UpdatedAt  int64
 	Title      string
 	TmdbID     int64
 	TmdbUrl    string

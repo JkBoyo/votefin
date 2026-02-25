@@ -9,7 +9,7 @@ FROM movies m
 INNER JOIN votes v on m.id = v.movie_id
 WHERE v.user_id = ?;
 
--- name: GetUsersByMoveisVoted :many
+-- name: GetUsersByMovieisVoted :many
 SELECT u.username
 FROM users u
 INNER JOIN votes v on u.id = v.user_id

@@ -6,8 +6,8 @@ package database
 
 type Movie struct {
 	ID         int64
-	CreatedAt  string
-	UpdatedAt  string
+	CreatedAt  int64
+	UpdatedAt  int64
 	Title      string
 	TmdbID     int64
 	TmdbUrl    string
@@ -17,8 +17,8 @@ type Movie struct {
 
 type User struct {
 	ID             int64
-	CreatedAt      string
-	UpdatedAt      string
+	CreatedAt      int64
+	UpdatedAt      int64
 	JellyfinUserID string
 	Username       string
 	IsAdmin        int64

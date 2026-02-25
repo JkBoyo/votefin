@@ -76,8 +76,8 @@ WHERE v.user_id = ?
 
 type GetMoviesByUserVotesRow struct {
 	ID         int64
-	CreatedAt  string
-	UpdatedAt  string
+	CreatedAt  int64
+	UpdatedAt  int64
 	Title      string
 	TmdbID     int64
 	TmdbUrl    string
@@ -119,15 +119,15 @@ func (q *Queries) GetMoviesByUserVotes(ctx context.Context, userID int64) ([]Get
 	return items, nil
 }
 
-const getUsersByMoveisVoted = `-- name: GetUsersByMoveisVoted :many
+const getUsersByMovieisVoted = `-- name: GetUsersByMovieisVoted :many
 SELECT u.username
 FROM users u
 INNER JOIN votes v on u.id = v.user_id
 WHERE v.movie_id = ?
 `
 
-func (q *Queries) GetUsersByMoveisVoted(ctx context.Context, movieID int64) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, getUsersByMoveisVoted, movieID)
+func (q *Queries) GetUsersByMovieisVoted(ctx context.Context, movieID int64) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersByMovieisVoted, movieID)
 	if err != nil {
 		return nil, err
 	}

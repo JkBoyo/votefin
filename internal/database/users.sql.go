@@ -16,8 +16,8 @@ RETURNING id, created_at, updated_at, jellyfin_user_id, username, is_admin
 `
 
 type AddUserParams struct {
-	CreatedAt      string
-	UpdatedAt      string
+	CreatedAt      int64
+	UpdatedAt      int64
 	JellyfinUserID string
 	Username       string
 	IsAdmin        int64
