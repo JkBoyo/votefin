@@ -13,17 +13,12 @@ import (
 type movieStatus string
 
 const (
-	statusOnServer  movieStatus = "on server"
-	statusNotRipped movieStatus = "not ripped"
+	statusOnServer   movieStatus = "on server"
+	statusProcessing movieStatus = "processing"
+	statusNotRipped  movieStatus = "not ripped"
 )
 
 func (cfg *apiConfig) markFinishedhandler(w http.ResponseWriter, r *http.Request) {
-	user, ok := r.Context().Value(userContextKey).(*database.User)
-	if !ok {
-		slog.Error("couldn't access user from context for mark finished endpoint")
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
 	err := r.ParseForm()
 	if err != nil {
 		slog.Error("Error parsing form data", "error", err)
@@ -65,6 +60,14 @@ func (cfg *apiConfig) markFinishedhandler(w http.ResponseWriter, r *http.Request
 		slog.Error("Error setting status", "error", err)
 		return
 	}
+
+	user, ok := r.Context().Value(userContextKey).(*database.User)
+	if !ok {
+		slog.Error("couldn't access user from context for mark finished endpoint")
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
 	currUserVotes, err := cfg.db.GetVotesCountPerUser(r.Context(), user.ID)
 	if err == sql.ErrNoRows {
 		slog.Warn("No rows returned", "error", err)
