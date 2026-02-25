@@ -137,3 +137,20 @@ func (q *Queries) InsertMovie(ctx context.Context, arg InsertMovieParams) (Movie
 	)
 	return i, err
 }
+
+const updateStatus = `-- name: UpdateStatus :exec
+UPDATE movies
+SET updated_at = ?, status = ? 
+WHERE id = ?
+`
+
+type UpdateStatusParams struct {
+	UpdatedAt int64
+	Status    string
+	ID        int64
+}
+
+func (q *Queries) UpdateStatus(ctx context.Context, arg UpdateStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateStatus, arg.UpdatedAt, arg.Status, arg.ID)
+	return err
+}

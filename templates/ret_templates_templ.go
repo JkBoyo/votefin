@@ -59,7 +59,7 @@ func SearchList(retMovies []trie.Obj) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/admin/addmovie?movieId=%d", obj.Val))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/admin/addMovie?movieId=%d", obj.Val))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/ret_templates.templ`, Line: 15, Col: 64}
 			}

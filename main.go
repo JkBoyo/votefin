@@ -64,14 +64,15 @@ func main() {
 
 	serveMux.Handle("/admin/", http.StripPrefix("/admin", apiConf.AuthorizeMiddleWare(CheckIsAdmin(serveMux))))
 
-	serveMux.HandleFunc("POST /searchmovies", apiConf.searchMoviesToAdd)
-	serveMux.HandleFunc("POST /addmovie", apiConf.addMovieHandler)
+	serveMux.HandleFunc("POST /searchMovies", apiConf.searchMoviesToAdd)
+	serveMux.HandleFunc("POST /addMovie", apiConf.addMovieHandler)
+	serveMux.HandleFunc("POST /markFinished", apiConf.markFinishedhandler)
 
 	serveMux.Handle("POST /login", http.HandlerFunc(apiConf.loginUser))
 	serveMux.Handle("POST /logout", http.HandlerFunc(apiConf.logoutUser))
 
 	serveMux.Handle("POST /vote", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.voteHandler)))
-	serveMux.Handle("POST /removevote", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.voteRemovalHandler)))
+	serveMux.Handle("POST /removeVote", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.voteRemovalHandler)))
 
 	serveMux.Handle("GET /login", *templ.Handler(templates.BasePage(templates.Login())))
 	serveMux.Handle("GET /dashboard", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.renderPageHandler)))

@@ -12,5 +12,10 @@ INSERT INTO movies (created_at, updated_at, title, tmdb_id, tmdb_url, poster_pat
 VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
+-- name: UpdateStatus :exec
+UPDATE movies
+SET updated_at = ?, status = ? 
+WHERE id = ?;
+
 
 

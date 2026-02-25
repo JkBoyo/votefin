@@ -27,13 +27,13 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 		</form>
 		<div class="">
 			<h2>Votes</h2>
-			@VotesMovieList(false, "moviesVotedOn", votedOnMovies)
+			@VotesMovieList(isAdmin, false, votedOnMovies)
 		</div>
 		<div class="">
 			<h2>User Votes</h2>
-			<form id="moviesToUnvoteForm" hx-post="/removevote" hx-swap="none">
+			<form id="moviesToUnvoteForm" hx-post="/removeVote" hx-swap="none">
 				<button id="" type="submit">Remove Votes</button>
-				@UserVotesMovieList(false, "userMoviesVotedOn", userVotesLeftCount, userVotedMovies)
+				@UserVotesMovieList(false, userVotesLeftCount, userVotedMovies)
 			</form>
 		</div>
 		<div id="moviesToVoteColumn">
@@ -42,7 +42,7 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 					name="searchMovies"
 					type="text"
 					placeholder="Search movies to add"
-					hx-post="/admin/searchmovies"
+					hx-post="/admin/searchMovies"
 					hx-target="#foundMovies"
 				/>
 				<div id="foundMovies"></div>
@@ -50,15 +50,15 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 			<h2>Content to Vote On</h2>
 			<form id="moviesToVoteForm" hx-post="/vote" hx-swap="none">
 				<button id="" type="submit">Submit Votes</button>
-				@MovieList(false, "moviesToVote", allMovies)
+				@MovieList(false, allMovies)
 			</form>
 		</div>
 	</div>
 }
 
-templ VotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesSortedByVotesRow) {
+templ VotesMovieList(isAdmin int64, swap bool, votedOnMovies []database.GetMoviesSortedByVotesRow) {
 	<ol
-		id={ id }
+		id="moviesVotedOn"
 		if swap {
 			hx-swap-oob="true"
 		}
@@ -69,7 +69,7 @@ templ VotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesSor
 			{{ displayedMovies := 0 }}
 			for _, movie := range votedOnMovies {
 				if movie.TotalVoteCount.Float64 > 0 {
-					@votedMovie(movie)
+					@votedMovie(isAdmin, movie)
 					{{ displayedMovies += 1 }}
 				}
 			}
@@ -80,9 +80,9 @@ templ VotesMovieList(swap bool, id string, votedOnMovies []database.GetMoviesSor
 	</ol>
 }
 
-templ UserVotesMovieList(swap bool, id string, userVotesLeft int, votedOnMovies []database.GetMoviesByUserVotesRow) {
+templ UserVotesMovieList(swap bool, userVotesLeft int, votedOnMovies []database.GetMoviesByUserVotesRow) {
 	<ol
-		id={ id }
+		id="userMoviesVotedOn"
 		if swap {
 			hx-swap-oob="true"
 		}
@@ -105,9 +105,9 @@ templ UserVotesMovieList(swap bool, id string, userVotesLeft int, votedOnMovies 
 	</ol>
 }
 
-templ MovieList(swap bool, id string, allMovies []database.Movie) {
+templ MovieList(swap bool, allMovies []database.Movie) {
 	<ul
-		id={ id }
+		id="moviesToVote"
 		if swap {
 			hx-swap-oob="true"
 		}
@@ -115,8 +115,15 @@ templ MovieList(swap bool, id string, allMovies []database.Movie) {
 		if len(allMovies) < 1 {
 			@NoMovies()
 		} else {
+			{{ displayedMovies := 0 }}
 			for _, movie := range allMovies {
-				@Movie(movie)
+				if movie.Status != "on server" {
+					@Movie(movie)
+					{{ displayedMovies += 1 }}
+				}
+			}
+			if displayedMovies == 0 {
+				@NoMovies()
 			}
 		}
 	</ul>
@@ -142,12 +149,15 @@ templ Movie(m database.Movie) {
 	</li>
 }
 
-templ votedMovie(m database.GetMoviesSortedByVotesRow) {
+templ votedMovie(isAdmin int64, m database.GetMoviesSortedByVotesRow) {
 	<li>
 		<div class="">
 			<a href={ m.TmdbUrl } target="_blank">
 				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
 				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", int64(m.TotalVoteCount.Float64), m.Title) } </label>
+				if isAdmin == 1 {
+					<button name="resetMovieId" type="button" hx-post={ fmt.Sprintf("/admin/markFinished?movieId=%d", m.ID) } hx-swap="none">Status on Server</button>
+				}
 			</a>
 		</div>
 	</li>

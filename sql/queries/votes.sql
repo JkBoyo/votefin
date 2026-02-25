@@ -28,3 +28,8 @@ WHERE v.movie_id = ? AND v.user_id = ?;
 UPDATE votes
 SET updated_at= ?, vote_count = ?
 WHERE id = ?;
+
+-- name: SetMovieVotesZero :exec
+UPDATE votes
+SET updated_at = ?, vote_count = 0
+WHERE movie_id = ?;

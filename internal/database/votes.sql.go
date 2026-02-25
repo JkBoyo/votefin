@@ -161,6 +161,22 @@ func (q *Queries) GetVotesCountPerUser(ctx context.Context, userID int64) (sql.N
 	return sum, err
 }
 
+const setMovieVotesZero = `-- name: SetMovieVotesZero :exec
+UPDATE votes
+SET updated_at = ?, vote_count = 0
+WHERE movie_id = ?
+`
+
+type SetMovieVotesZeroParams struct {
+	UpdatedAt int64
+	MovieID   int64
+}
+
+func (q *Queries) SetMovieVotesZero(ctx context.Context, arg SetMovieVotesZeroParams) error {
+	_, err := q.db.ExecContext(ctx, setMovieVotesZero, arg.UpdatedAt, arg.MovieID)
+	return err
+}
+
 const updateVoteCount = `-- name: UpdateVoteCount :exec
 UPDATE votes
 SET updated_at= ?, vote_count = ?

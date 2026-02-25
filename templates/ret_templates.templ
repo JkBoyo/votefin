@@ -12,7 +12,7 @@ templ SearchList(retMovies []trie.Obj) {
 		for _, obj := range retMovies {
 			<li
 				value={ obj.Val }
-				hx-post={ fmt.Sprintf("/admin/addmovie?movieId=%d", obj.Val) }
+				hx-post={ fmt.Sprintf("/admin/addMovie?movieId=%d", obj.Val) }
 				hx-target="#moviesToVote"
 				hx-swap="beforeend"
 			>
