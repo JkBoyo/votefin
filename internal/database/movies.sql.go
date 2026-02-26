@@ -10,6 +10,16 @@ import (
 	"database/sql"
 )
 
+const deleteMovie = `-- name: DeleteMovie :exec
+DELETE FROM movies
+WHERE id = ?
+`
+
+func (q *Queries) DeleteMovie(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteMovie, id)
+	return err
+}
+
 const getMovies = `-- name: GetMovies :many
 SELECT id, created_at, updated_at, title, tmdb_id, tmdb_url, poster_path, status FROM movies
 `

@@ -66,7 +66,7 @@ func (cfg *apiConfig) addMovieHandler(w http.ResponseWriter, r *http.Request) {
 
 	resStr := fmt.Sprintf("Successfully added %s for voting", movie.Title)
 
-	html := templates.AddMovieRet(resStr, movie)
+	html := templates.AddMovieRet(1, resStr, movie) // should have the remove button which is why it needs 1 since only admin should be able to hit this endpoint
 
 	fmt.Println(html)
 

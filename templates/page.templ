@@ -50,7 +50,7 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 			<h2>Content to Vote On</h2>
 			<form id="moviesToVoteForm" hx-post="/vote" hx-swap="none">
 				<button id="" type="submit">Submit Votes</button>
-				@MovieList(false, allMovies)
+				@MovieList(isAdmin, false, allMovies)
 			</form>
 		</div>
 	</div>
@@ -105,7 +105,7 @@ templ UserVotesMovieList(swap bool, userVotesLeft int, votedOnMovies []database.
 	</ol>
 }
 
-templ MovieList(swap bool, allMovies []database.Movie) {
+templ MovieList(isAdmin int64, swap bool, allMovies []database.Movie) {
 	<ul
 		id="moviesToVote"
 		if swap {
@@ -118,7 +118,7 @@ templ MovieList(swap bool, allMovies []database.Movie) {
 			{{ displayedMovies := 0 }}
 			for _, movie := range allMovies {
 				if movie.Status != "on server" {
-					@Movie(movie)
+					@Movie(isAdmin, movie)
 					{{ displayedMovies += 1 }}
 				}
 			}
@@ -137,7 +137,7 @@ templ NoMovies() {
 	</li>
 }
 
-templ Movie(m database.Movie) {
+templ Movie(isAdmin int64, m database.Movie) {
 	<li>
 		<div class="">
 			<a href={ m.TmdbUrl } target="_blank">
@@ -146,6 +146,9 @@ templ Movie(m database.Movie) {
 			</a>
 		</div>
 		<input type="checkbox" id={ m.Title } name="votedMovie" value={ fmt.Sprintf("%d", m.ID) }/>
+		if isAdmin == 1 {
+			<button name="removeMovie" type="button" hx-post={ fmt.Sprintf("/admin/removeMovie?movieId=%d", m.ID) } hx-swap="none">Remove Movie</button>
+		}
 	</li>
 }
 

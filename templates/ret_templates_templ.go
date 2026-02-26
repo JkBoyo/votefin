@@ -106,7 +106,7 @@ func SearchList(retMovies []trie.Obj) templ.Component {
 	})
 }
 
-func AddMovieRet(notif string, movie database.Movie) templ.Component {
+func AddMovieRet(isAdmin int64, notif string, movie database.Movie) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -144,7 +144,7 @@ func AddMovieRet(notif string, movie database.Movie) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Movie(movie).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Movie(isAdmin, movie).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

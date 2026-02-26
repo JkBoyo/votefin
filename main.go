@@ -67,6 +67,7 @@ func main() {
 	serveMux.HandleFunc("POST /searchMovies", apiConf.searchMoviesToAdd)
 	serveMux.HandleFunc("POST /addMovie", apiConf.addMovieHandler)
 	serveMux.HandleFunc("POST /markFinished", apiConf.markFinishedhandler)
+	serveMux.HandleFunc("POST /removeMovie", apiConf.removeMovie)
 
 	serveMux.Handle("POST /login", http.HandlerFunc(apiConf.loginUser))
 	serveMux.Handle("POST /logout", http.HandlerFunc(apiConf.logoutUser))
