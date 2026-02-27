@@ -31,10 +31,7 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 		</div>
 		<div class="">
 			<h2>User Votes</h2>
-			<form id="moviesToUnvoteForm" hx-post="/removeVote" hx-swap="none">
-				<button id="" type="submit">Remove Votes</button>
-				@UserVotesMovieList(false, userVotesLeftCount, userVotedMovies)
-			</form>
+			@UserVotesMovieList(false, userVotesLeftCount, userVotedMovies)
 		</div>
 		<div id="moviesToVoteColumn">
 			if isAdmin == 1 {
@@ -48,10 +45,7 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 				<div id="foundMovies"></div>
 			}
 			<h2>Content to Vote On</h2>
-			<form id="moviesToVoteForm" hx-post="/vote" hx-swap="none">
-				<button id="" type="submit">Submit Votes</button>
-				@MovieList(isAdmin, false, allMovies)
-			</form>
+			@MovieList(isAdmin, false, allMovies)
 		</div>
 	</div>
 }
@@ -145,7 +139,7 @@ templ Movie(isAdmin int64, m database.Movie) {
 				<label for={ m.Title }>{ fmt.Sprintf("Title: %s", m.Title) } </label>
 			</a>
 		</div>
-		<input type="checkbox" id={ m.Title } name="votedMovie" value={ fmt.Sprintf("%d", m.ID) }/>
+		<button name="voteMovie" type="button" hx-post={ fmt.Sprintf("/vote?movieId=%d", m.ID) } hx-swap="none">Vote</button>
 		if isAdmin == 1 {
 			<button name="removeMovie" type="button" hx-post={ fmt.Sprintf("/admin/removeMovie?movieId=%d", m.ID) } hx-swap="none">Remove Movie</button>
 		}
@@ -174,6 +168,6 @@ templ userVotedMovie(m database.GetMoviesByUserVotesRow) {
 				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
 			</a>
 		</div>
-		<input type="checkbox" id={ m.Title } name="votedMovie" value={ fmt.Sprintf("%d", m.ID) }/>
+		<button name="unVoteMovie" type="button" hx-post={ fmt.Sprintf("/removeVote?movieId=%d", m.ID) } hx-swap="none">Remove Vote</button>
 	</li>
 }
