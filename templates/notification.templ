@@ -1,5 +1,11 @@
 package templates
 
 templ Notification(text string) {
-	<div id="notification" hx-swap-oob="true">Error: { text }</div>
+	<div
+		if text == "" {
+			hidden
+		}
+		id="notification"
+		hx-swap-oob="true"
+	>Error: { text }</div>
 }
