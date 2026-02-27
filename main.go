@@ -42,6 +42,16 @@ func main() {
 	if err != nil {
 		fmt.Println("Error with DB", err)
 	}
+	pragQuery := `PRAGMA journal_mode = WAL;
+			PRAGMA synchronous = NORMAL;
+			PRAGMA cache_size = 10000;
+			PRAGMA temp_store = MEMORY;
+			PRAGMA foreign_keys = ON;
+			PRAGMA mmap_size = 268435456;`
+	_, err = db.Exec(pragQuery)
+	if err != nil {
+		slog.Error("couldn't execute pragma commands", "error", err)
+	}
 	defer db.Close()
 	dbQueries := database.New(db)
 
