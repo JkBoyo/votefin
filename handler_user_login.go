@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"www.github.com/jkboyo/votefin/internal/database"
@@ -68,11 +70,21 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("error adding user" + err.Error())
 		}
 	}
+	// INFO: Sets the cookie to require tls or not only allowing local login when false. Defaults to true
+	isCookieSecureStr := os.Getenv("SECURE_ONLY_COOKIE")
+	if isCookieSecureStr == "" {
+		isCookieSecureStr = "true"
+	}
+	isCookieSecure, err := strconv.ParseBool(isCookieSecureStr)
+	if err != nil {
+		slog.Error("Error converting secure cookie flag to a bool", "error", err)
+		return
+	}
 
 	authCookie := &http.Cookie{
 		Name:     "Token",
 		Value:    authResp.AccessToken,
-		Secure:   true,
+		Secure:   isCookieSecure,
 		HttpOnly: true,
 		SameSite: 2,
 		Path:     "/",
