@@ -36,7 +36,7 @@ func addJellyfinAuthHeader(r *http.Request, token, userName string) {
 		"Authorization",
 		fmt.Sprintf(JellyfinAuthHeaderTemp,
 			token,
-			os.Getenv("RELEASE_VERSION"),
+			"0.9.0",
 			hex.EncodeToString([]byte(userName))+os.Getenv("SERVER_ID"),
 		),
 	)
