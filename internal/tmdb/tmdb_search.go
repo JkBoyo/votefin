@@ -9,18 +9,12 @@ import (
 	"strconv"
 
 	"www.github.com/jkboyo/votefin/internal/trie"
-
-	"github.com/joho/godotenv"
 )
 
 func InitTMDBTrie() (*trie.Trie, error) {
 	tmdbTrie := trie.NewTrie()
 
-	err := godotenv.Load()
-	if err != nil {
-		return nil, errors.New("TMDB data env var not set.")
-	}
-	tmdbDataFP := os.Getenv("TMDB_DATA")
+	tmdbDataFP := "./data/movie_ids_08_30_2025.json"
 
 	tmdbData, err := os.Open(tmdbDataFP)
 
@@ -33,6 +27,11 @@ func InitTMDBTrie() (*trie.Trie, error) {
 	scanner := bufio.NewScanner(tmdbData)
 
 	scanner.Split(bufio.ScanLines)
+
+	popLimit, err := strconv.ParseFloat(os.Getenv("POPULARITY_LIMIT"), 64)
+	if err != nil {
+		popLimit = 0
+	}
 
 	for scanner.Scan() {
 		newObj := &struct {
@@ -48,10 +47,6 @@ func InitTMDBTrie() (*trie.Trie, error) {
 			Str:        newObj.OriginalTitle,
 			Val:        newObj.ID,
 			Popularity: newObj.Popularity,
-		}
-		popLimit, err := strconv.ParseFloat(os.Getenv("POPULARITY_LIMIT"), 64)
-		if err != nil {
-			popLimit = 0
 		}
 		if trieObj.Popularity < float32(popLimit) {
 			continue

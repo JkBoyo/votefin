@@ -65,12 +65,10 @@ func main() {
 
 	serveMux := http.NewServeMux()
 
-	imagesFP := "./assets/static/images/"
+	imagesFP := "./assets/images/"
 	if _, err := os.Stat(imagesFP); os.IsNotExist(err) {
 		os.Mkdir(imagesFP, 0775)
 	}
-
-	assets := http.FileServer(http.Dir("./assets/static/"))
 
 	serveMux.Handle("/admin/", http.StripPrefix("/admin", apiConf.AuthorizeMiddleWare(CheckIsAdmin(serveMux))))
 
@@ -88,7 +86,8 @@ func main() {
 	serveMux.Handle("GET /login", *templ.Handler(templates.BasePage(templates.Login())))
 	serveMux.Handle("GET /dashboard", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.renderPageHandler)))
 
-	serveMux.Handle("/static/", http.StripPrefix("/static/", assets))
+	serveMux.Handle("/assets/", disableCacheInDevMode(
+		http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/")))))
 
 	// Hande the root path so that it redirects based on the users cookie
 	serveMux.Handle("/{$}", apiConf.AuthorizeMiddleWare(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +110,18 @@ func main() {
 
 	fmt.Println("Serving at http://localhost:8080")
 	server.ListenAndServe()
+}
+
+var dev bool = true
+
+func disableCacheInDevMode(next http.Handler) http.Handler {
+	if !dev {
+		return next
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		next.ServeHTTP(w, r)
+	})
 }
 
 // I don't think that i will need this but if I change my mind it's here.

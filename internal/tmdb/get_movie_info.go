@@ -85,7 +85,7 @@ func writeImageToDisk(imWidth, pp string) {
 		log.Print(err)
 	}
 
-	posterFP := fmt.Sprintf("./assets/static/images%s", pp)
+	posterFP := fmt.Sprintf("./assets/images%s", pp)
 	err = os.WriteFile(posterFP, dat, 0644)
 	if err != nil {
 		log.Print(err)

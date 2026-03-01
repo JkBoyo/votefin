@@ -10,7 +10,7 @@ templ BasePage(c templ.Component) {
 			<meta charset="UTF-8"/>
 			<title>Votefin</title>
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
-			<link rel="stylesheet" type="text/css" href="./static/main.css"/>
+			<link rel="stylesheet" type="text/css" href="./assets/main.css"/>
 		</head>
 		<header>Votefin</header>
 		<body id="body">
@@ -135,7 +135,7 @@ templ Movie(isAdmin int64, m database.Movie) {
 	<li>
 		<div class="">
 			<a href={ m.TmdbUrl } target="_blank">
-				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<img src={ fmt.Sprintf("assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
 				<label for={ m.Title }>{ fmt.Sprintf("Title: %s", m.Title) } </label>
 			</a>
 		</div>
@@ -150,7 +150,7 @@ templ votedMovie(isAdmin int64, m database.GetMoviesSortedByVotesRow) {
 	<li>
 		<div class="">
 			<a href={ m.TmdbUrl } target="_blank">
-				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<img src={ fmt.Sprintf("/assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
 				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", int64(m.TotalVoteCount.Float64), m.Title) } </label>
 				if isAdmin == 1 {
 					<button name="resetMovieId" type="button" hx-post={ fmt.Sprintf("/admin/markFinished?movieId=%d", m.ID) } hx-swap="none">Status on Server</button>
@@ -164,7 +164,7 @@ templ userVotedMovie(m database.GetMoviesByUserVotesRow) {
 	<li>
 		<div class="">
 			<a href={ m.TmdbUrl } target="_blank">
-				<img src={ fmt.Sprintf("/static/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<img src={ fmt.Sprintf("assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
 				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
 			</a>
 		</div>
