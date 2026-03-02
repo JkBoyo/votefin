@@ -1,7 +1,8 @@
 .env
 *.db*
-static/images/*
+assets/images/*
 assets/movie_ids_*
 assets/static/images/*
 data/*
 web/
+node_modules
