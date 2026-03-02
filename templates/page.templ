@@ -1,19 +1,28 @@
 package templates
 
-import "www.github.com/jkboyo/votefin/internal/database"
-import "fmt"
+import (
+	"fmt"
+	"www.github.com/jkboyo/votefin/internal/database"
+)
 
-templ BasePage(c templ.Component) {
+templ BasePage(user *database.User, c templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<title>Votefin</title>
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
-			<link rel="stylesheet" type="text/css" href="./assets/main.css"/>
+			<link rel="stylesheet" type="text/css" href="./assets/styles.css"/>
 		</head>
-		<header>Votefin</header>
-		<body id="body">
+		<header class="flex justify-between bg-slate-950 sticky top-0">
+			<div class="text-8xl m-4">Votefin</div>
+			if user != nil {
+				<form class="flex content-center" action="/logout" method="POST">
+					<button class="bg-blue-950 px-5 py-2 text-6xl rounded-md hover:bg-red-950 m-4 cursor-pointer" type="submit">Logout </button>
+				</form>
+			}
+		</header>
+		<body class="bg-slate-950 text-white m-5" id="body">
 			<div id="notification"></div>
 			@c
 		</body>
@@ -22,15 +31,10 @@ templ BasePage(c templ.Component) {
 
 templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<div class="pageGridCont">
-		<form action="/logout" method="POST">
-			<button type="submit">Logout</button>
-		</form>
 		<div class="">
-			<h2>Votes</h2>
 			@VotesMovieList(isAdmin, false, votedOnMovies)
 		</div>
 		<div class="">
-			<h2>User Votes</h2>
 			@UserVotesMovieList(false, userVotesLeftCount, userVotedMovies)
 		</div>
 		<div id="moviesToVoteColumn">
@@ -42,16 +46,19 @@ templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow
 					hx-post="/admin/searchMovies"
 					hx-target="#foundMovies"
 				/>
-				<div id="foundMovies"></div>
+				<ul class="bg-blue-900 rounded-md absolute" id="foundMovies"></ul>
 			}
-			<h2>Content to Vote On</h2>
 			@MovieList(isAdmin, false, allMovies)
 		</div>
 	</div>
 }
 
 templ VotesMovieList(isAdmin int64, swap bool, votedOnMovies []database.GetMoviesSortedByVotesRow) {
+	<div class="flex justify-between p-2">
+		<h2 class="text-6xl">Votes</h2>
+	</div>
 	<ol
+		class="flex border border-blue-900 rounded-md p-2 overflow-x-auto"
 		id="moviesVotedOn"
 		if swap {
 			hx-swap-oob="true"
@@ -75,13 +82,17 @@ templ VotesMovieList(isAdmin int64, swap bool, votedOnMovies []database.GetMovie
 }
 
 templ UserVotesMovieList(swap bool, userVotesLeft int, votedOnMovies []database.GetMoviesByUserVotesRow) {
+	<div class="flex gap-2 justify-between p-2">
+		<h2 class="text-6xl">User Votes</h2>
+		<h4 class="text-6xl" id="currUserVotes">Votes Left: { userVotesLeft }</h4>
+	</div>
 	<ol
+		class="flex border border-blue-900 rounded-md p-2 overflow-x-auto"
 		id="userMoviesVotedOn"
 		if swap {
 			hx-swap-oob="true"
 		}
 	>
-		<h4 id="currUserVotes">Votes Left: { userVotesLeft }</h4>
 		if len(votedOnMovies) < 1 {
 			@NoMovies()
 		} else {
@@ -100,7 +111,11 @@ templ UserVotesMovieList(swap bool, userVotesLeft int, votedOnMovies []database.
 }
 
 templ MovieList(isAdmin int64, swap bool, allMovies []database.Movie) {
+	<div class="p-2">
+		<h2 class="text-6xl">Content to Vote On</h2>
+	</div>
 	<ul
+		class="flex border border-blue-900 rounded-md p-2 overflow-x-auto"
 		id="moviesToVote"
 		if swap {
 			hx-swap-oob="true"
@@ -132,42 +147,44 @@ templ NoMovies() {
 }
 
 templ Movie(isAdmin int64, m database.Movie) {
-	<li>
-		<div class="">
-			<a href={ m.TmdbUrl } target="_blank">
-				<img src={ fmt.Sprintf("assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
-				<label for={ m.Title }>{ fmt.Sprintf("Title: %s", m.Title) } </label>
+	<li class="flex p-2">
+		<div class="flex flex-col rounded-md border-2 w-80 border-blue-900">
+			<a class="flex flex-col items-center pb-2" href={ m.TmdbUrl } target="_blank">
+				<img class="rounded-md p-2 w-full" src={ fmt.Sprintf("assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<h4 class="text-4xl text-center">{ m.Title }</h4>
 			</a>
+			<button class="text-4xl p-2 mt-auto m-2 bg-blue-900" name="voteMovie" type="button" hx-post={ fmt.Sprintf("/vote?movieId=%d", m.ID) } hx-swap="none">Vote</button>
+			if isAdmin == 1 {
+				<button class="text-4xl p-2 m-2 bg-blue-900" name="removeMovie" type="button" hx-post={ fmt.Sprintf("/admin/removeMovie?movieId=%d", m.ID) } hx-swap="none">Remove Movie</button>
+			}
 		</div>
-		<button name="voteMovie" type="button" hx-post={ fmt.Sprintf("/vote?movieId=%d", m.ID) } hx-swap="none">Vote</button>
-		if isAdmin == 1 {
-			<button name="removeMovie" type="button" hx-post={ fmt.Sprintf("/admin/removeMovie?movieId=%d", m.ID) } hx-swap="none">Remove Movie</button>
-		}
 	</li>
 }
 
 templ votedMovie(isAdmin int64, m database.GetMoviesSortedByVotesRow) {
-	<li>
-		<div class="">
-			<a href={ m.TmdbUrl } target="_blank">
-				<img src={ fmt.Sprintf("/assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
-				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", int64(m.TotalVoteCount.Float64), m.Title) } </label>
-				if isAdmin == 1 {
-					<button name="resetMovieId" type="button" hx-post={ fmt.Sprintf("/admin/markFinished?movieId=%d", m.ID) } hx-swap="none">Status on Server</button>
-				}
+	<li class="flex p-2">
+		<div class="flex flex-col rounded-md border-2 w-80 border-blue-900">
+			<a class="flex flex-col items-center pb-2" href={ m.TmdbUrl } target="_blank">
+				<img class="rounded-md p-2 w-full" src={ fmt.Sprintf("/assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<p class="text-4xl">{ fmt.Sprintf("Votes: %d", int64(m.TotalVoteCount.Float64)) }</p>
+				<h4 class="text-4xl text-center">{ m.Title } </h4>
 			</a>
+			if isAdmin == 1 {
+				<button class="text-4xl p-2 mt-auto m-6 bg-blue-900" name="resetMovieId" type="button" hx-post={ fmt.Sprintf("/admin/markFinished?movieId=%d", m.ID) } hx-swap="none">Status on Server</button>
+			}
 		</div>
 	</li>
 }
 
 templ userVotedMovie(m database.GetMoviesByUserVotesRow) {
-	<li>
-		<div class="">
-			<a href={ m.TmdbUrl } target="_blank">
-				<img src={ fmt.Sprintf("assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
-				<label for={ m.Title }>{ fmt.Sprintf("Votes: %d, Title: %s", m.VoteCount, m.Title) } </label>
+	<li class="flex p-2">
+		<div class="flex flex-col rounded-md border-2 w-80 border-blue-900">
+			<a class="flex flex-col items-center pb-2" href={ m.TmdbUrl } target="_blank">
+				<img class="rounded-md p-2 w-full" src={ fmt.Sprintf("assets/images%s", m.PosterPath) } alt={ m.Title } class=""/>
+				<p class="text-4xl">{ fmt.Sprintf("Votes: %d", m.VoteCount) } </p>
+				<h4 class="text-4xl text-center">{ m.Title }</h4>
 			</a>
+			<button class="text-4xl p-2 mt-auto m-6 bg-blue-900" name="unVoteMovie" type="button" hx-post={ fmt.Sprintf("/removeVote?movieId=%d", m.ID) } hx-swap="none">Remove Vote</button>
 		</div>
-		<button name="unVoteMovie" type="button" hx-post={ fmt.Sprintf("/removeVote?movieId=%d", m.ID) } hx-swap="none">Remove Vote</button>
 	</li>
 }
