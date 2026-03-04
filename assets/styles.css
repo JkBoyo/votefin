@@ -7,22 +7,24 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-900: oklch(39.6% 0.141 25.723);
     --color-red-950: oklch(25.8% 0.092 26.042);
-    --color-blue-100: oklch(93.2% 0.032 255.585);
     --color-blue-900: oklch(37.9% 0.146 265.522);
     --color-blue-950: oklch(28.2% 0.091 267.935);
-    --color-purple-950: oklch(29.1% 0.149 302.717);
-    --color-pink-500: oklch(65.6% 0.241 354.308);
-    --color-pink-950: oklch(28.4% 0.109 3.907);
     --color-slate-900: oklch(20.8% 0.042 265.755);
     --color-slate-950: oklch(12.9% 0.042 264.695);
-    --color-black: #000;
+    --color-gray-600: oklch(44.6% 0.03 256.802);
+    --color-gray-700: oklch(37.3% 0.034 259.733);
+    --color-gray-800: oklch(27.8% 0.033 256.848);
+    --color-gray-900: oklch(21% 0.034 264.665);
     --color-white: #fff;
     --spacing: 0.25rem;
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
     --text-4xl: 2.25rem;
     --text-4xl--line-height: calc(2.5 / 2.25);
-    --text-5xl: 3rem;
-    --text-5xl--line-height: 1;
     --text-6xl: 3.75rem;
     --text-6xl--line-height: 1;
     --text-8xl: 6rem;
@@ -190,14 +192,8 @@
   .top-0 {
     top: calc(var(--spacing) * 0);
   }
-  .z-10 {
-    z-index: 10;
-  }
-  .m-2 {
-    margin: calc(var(--spacing) * 2);
-  }
-  .m-3 {
-    margin: calc(var(--spacing) * 3);
+  .m-1 {
+    margin: calc(var(--spacing) * 1);
   }
   .m-4 {
     margin: calc(var(--spacing) * 4);
@@ -207,9 +203,6 @@
   }
   .m-6 {
     margin: calc(var(--spacing) * 6);
-  }
-  .mt-3 {
-    margin-top: calc(var(--spacing) * 3);
   }
   .mt-auto {
     margin-top: auto;
@@ -222,9 +215,6 @@
   }
   .table {
     display: table;
-  }
-  .h-full {
-    height: 100%;
   }
   .w-80 {
     width: calc(var(--spacing) * 80);
@@ -244,56 +234,29 @@
   .flex-col {
     flex-direction: column;
   }
-  .flex-row {
-    flex-direction: row;
-  }
-  .content-around {
-    align-content: space-around;
-  }
-  .content-between {
-    align-content: space-between;
-  }
   .content-center {
     align-content: center;
-  }
-  .content-evenly {
-    align-content: space-evenly;
   }
   .items-center {
     align-items: center;
   }
-  .items-stretch {
-    align-items: stretch;
-  }
-  .justify-around {
-    justify-content: space-around;
-  }
   .justify-between {
     justify-content: space-between;
   }
-  .justify-center {
-    justify-content: center;
-  }
-  .justify-center-safe {
-    justify-content: safe center;
-  }
-  .justify-items-center {
-    justify-items: center;
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
   }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
-  .self-end {
-    align-self: flex-end;
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
   }
-  .justify-self-start {
-    justify-self: flex-start;
+  .overflow-hidden {
+    overflow: hidden;
   }
   .overflow-x-auto {
     overflow-x: auto;
-  }
-  .overscroll-contain {
-    overscroll-behavior: contain;
   }
   .rounded-md {
     border-radius: var(--radius-md);
@@ -306,14 +269,11 @@
     border-style: var(--tw-border-style);
     border-width: 2px;
   }
-  .border-blue-100 {
-    border-color: var(--color-blue-100);
-  }
   .border-blue-900 {
     border-color: var(--color-blue-900);
   }
-  .bg-black {
-    background-color: var(--color-black);
+  .border-blue-950 {
+    border-color: var(--color-blue-950);
   }
   .bg-blue-900 {
     background-color: var(--color-blue-900);
@@ -321,17 +281,11 @@
   .bg-blue-950 {
     background-color: var(--color-blue-950);
   }
-  .bg-pink-500 {
-    background-color: var(--color-pink-500);
+  .bg-gray-800 {
+    background-color: var(--color-gray-800);
   }
-  .bg-pink-950 {
-    background-color: var(--color-pink-950);
-  }
-  .bg-purple-950 {
-    background-color: var(--color-purple-950);
-  }
-  .bg-slate-900 {
-    background-color: var(--color-slate-900);
+  .bg-gray-900 {
+    background-color: var(--color-gray-900);
   }
   .bg-slate-950 {
     background-color: var(--color-slate-950);
@@ -339,11 +293,14 @@
   .p-2 {
     padding: calc(var(--spacing) * 2);
   }
+  .p-3 {
+    padding: calc(var(--spacing) * 3);
+  }
   .p-4 {
     padding: calc(var(--spacing) * 4);
   }
-  .p-5 {
-    padding: calc(var(--spacing) * 5);
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
   }
   .px-5 {
     padding-inline: calc(var(--spacing) * 5);
@@ -351,28 +308,23 @@
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
   }
-  .py-3 {
-    padding-block: calc(var(--spacing) * 3);
-  }
-  .py-4 {
-    padding-block: calc(var(--spacing) * 4);
-  }
   .pb-2 {
     padding-bottom: calc(var(--spacing) * 2);
-  }
-  .pb-8 {
-    padding-bottom: calc(var(--spacing) * 8);
   }
   .text-center {
     text-align: center;
   }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+  .text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
   .text-4xl {
     font-size: var(--text-4xl);
     line-height: var(--tw-leading, var(--text-4xl--line-height));
-  }
-  .text-5xl {
-    font-size: var(--text-5xl);
-    line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
   .text-6xl {
     font-size: var(--text-6xl);
@@ -382,11 +334,8 @@
     font-size: var(--text-8xl);
     line-height: var(--tw-leading, var(--text-8xl--line-height));
   }
-  .text-balance {
-    text-wrap: balance;
-  }
-  .text-wrap {
-    text-wrap: wrap;
+  .text-red-900 {
+    color: var(--color-red-900);
   }
   .text-white {
     color: var(--color-white);

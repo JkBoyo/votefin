@@ -1,11 +1,11 @@
 package templates
 
 templ Login() {
-	<form method="post" action="/login">
-		<label for="Username">"User Name"</label>
-		<input type="text" id="Username" name="Username"/>
-		<label for="Password">"Password"</label>
-		<input type="password" id="Password" name="Password"/>
-		<input type="submit" value="Submit"/>
+	<form class="flex flex-col text-4xl p-8 border-2 border-blue-950 bg-gray-900 rounded-md gap-4" method="post" action="/login">
+		<label for="Username">User Name</label>
+		<input class="border rounded-md text-3xl p" type="text" id="Username" name="Username"/>
+		<label for="Password">Password</label>
+		<input class="border rounded-md text-3xl p" type="password" id="Password" name="Password"/>
+		<input class="bg-blue-950 m-y-3 m-x-7" type="submit" value="Login"/>
 	</form>
 }
