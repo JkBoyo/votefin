@@ -5,7 +5,7 @@ import (
 	"www.github.com/jkboyo/votefin/internal/database"
 )
 
-templ BasePage(user *database.User, c templ.Component) {
+templ BasePage(c templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -14,22 +14,22 @@ templ BasePage(user *database.User, c templ.Component) {
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
 			<link rel="stylesheet" type="text/css" href="./assets/styles.css"/>
 		</head>
-		<header class="flex justify-between bg-slate-950 sticky top-0">
-			<div class="text-8xl m-4">Votefin</div>
-			if user != nil {
-				<form class="flex content-center" action="/logout" method="POST">
-					<button class="bg-blue-950 px-5 py-2 text-6xl rounded-md hover:bg-red-950 m-4 cursor-pointer" type="submit">Logout </button>
-				</form>
-			}
-		</header>
-		<body class="bg-slate-950 text-white m-5" id="body">
-			<div id="notification"></div>
+		<body class="flex flex-col gap-24 h-screen bg-slate-950 text-white m-5" id="body">
 			@c
+			<div id="notification"></div>
 		</body>
 	</html>
 }
 
-templ VotePage(isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
+templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
+	<header class="flex justify-between bg-slate-950 sticky top-0">
+		<div class="text-8xl m-4">Votefin</div>
+		if user != nil {
+			<form class="flex content-center" action="/logout" method="POST">
+				<button class="bg-blue-950 px-5 py-2 text-6xl rounded-md hover:bg-red-950 m-4 cursor-pointer" type="submit">Logout </button>
+			</form>
+		}
+	</header>
 	<div class="pageGridCont">
 		<div class="">
 			@VotesMovieList(isAdmin, false, votedOnMovies)

@@ -72,5 +72,5 @@ func renderPage(cfg *apiConfig, r *http.Request, user *database.User) (templ.Com
 		return nil, fmt.Errorf("Error fetching all movies for voting: %v", err.Error())
 	}
 
-	return templates.BasePage(user, templates.VotePage(user.IsAdmin, votedOnMovies, userVotesLeft, userVotedMovies, allMovies)), nil
+	return templates.BasePage(templates.VotePage(user, user.IsAdmin, votedOnMovies, userVotesLeft, userVotedMovies, allMovies)), nil
 }
