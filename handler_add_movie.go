@@ -18,6 +18,10 @@ func (cfg *apiConfig) searchMoviesToAdd(w http.ResponseWriter, r *http.Request) 
 
 	moviePrefix := r.FormValue("searchMovies")
 
+	if len(moviePrefix) == 0 {
+		respondWithHTML(w, 200, templates.EmptyDiv())
+		return
+	}
 	tmdbTrie := cfg.tmdbTrie
 
 	if err != nil {
