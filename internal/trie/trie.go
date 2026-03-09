@@ -12,9 +12,8 @@ var (
 )
 
 type trieNode struct {
-	Children  map[rune]*trieNode
-	Movies    []Movie
-	IsNameEnd bool
+	Movies   []*Movie
+	Children map[rune]*trieNode
 }
 
 type Trie struct {
@@ -28,83 +27,81 @@ type Obj struct {
 }
 
 type Movie struct {
-	Title      string
-	ID         int
-	Popularity float32
+	Title      string  `json:"original_title"`
+	ID         int     `json:"id"`
+	Popularity float32 `json:"popularity"`
 }
 
 func NewTrie() *Trie {
 	return &Trie{
 		Root: &trieNode{
 			Children: map[rune]*trieNode{},
-			//TODO: Size balloning due to slice replace with a map
-			Movies:    []Movie{},
-			IsNameEnd: false,
 		},
 	}
 }
 
-func (t *Trie) Insert(obj Obj) {
+func (t *Trie) Insert(movie Movie) {
 	curNode := t.Root
-	simpObjStr := reduceTrieStr(obj.Str)
-	for _, char := range simpObjStr {
+	simpObjStr := reduceTrieStr(movie.Title)
+	for i, char := range simpObjStr {
 		nextNode, exists := curNode.Children[char]
 		if exists {
 			curNode = nextNode
-		} else {
-			newNode := &trieNode{
-				Children:  map[rune]*trieNode{},
-				IsNameEnd: false,
-			}
+			continue
+		}
+
+		newNode := &trieNode{}
+		if i < len(simpObjStr)-1 {
+			newNode.Children = map[rune]*trieNode{}
 			curNode.Children[char] = newNode
 			curNode = newNode
 		}
+
 	}
-	curNode.Movies = append(curNode.Movies, Movie{Title: obj.Str, ID: obj.Val, Popularity: obj.Popularity})
-	curNode.IsNameEnd = true
+	curNode.Movies = append(curNode.Movies, &movie)
 }
 
-func (t *Trie) RetrieveObjs(pref string) ([]Obj, error) {
+func (t *Trie) RetrieveObjs(pref string) ([]*Movie, error) {
 	curNode := t.Root
 	simpPref := reduceTrieStr(pref)
 	for _, char := range simpPref {
 		nextNode, exists := curNode.Children[char]
 		if !exists {
-			return []Obj{}, ErrNoMatch
+			return []*Movie{}, ErrNoMatch
 		}
 		curNode = nextNode
 	}
 
 	retObjs := searchLevel(curNode, pref)
-	if curNode.IsNameEnd {
+	if curNode.Movies != nil {
 		for _, movie := range curNode.Movies {
-			retObjs = append(retObjs, Obj{movie.Title, movie.ID, movie.Popularity})
+			retObjs = append(retObjs, movie)
 		}
 	}
 
-	slices.SortFunc(retObjs, func(i, j Obj) int {
+	slices.SortFunc(retObjs, func(i, j *Movie) int {
 		return int(j.Popularity) - int(i.Popularity)
 	})
 
 	return retObjs, nil
 }
 
-func searchLevel(currNode *trieNode, currPrefix string) []Obj {
+func searchLevel(currNode *trieNode, currPrefix string) []*Movie {
 	keys := maps.Keys(currNode.Children)
 
-	objs := []Obj{}
+	movies := []*Movie{}
 
 	for k := range keys {
-		if currNode.Children[k].IsNameEnd {
+		if currNode.Children[k].Movies != nil {
 			for _, movie := range currNode.Children[k].Movies {
-				objs = append(objs, Obj{movie.Title, movie.ID, movie.Popularity})
+				movies = append(movies, movie)
 			}
 		}
 		if currNode.Children[k].Children != nil {
-			objs = append(objs, searchLevel(currNode.Children[k], currPrefix+string(k))...)
+			movies = append(movies, searchLevel(currNode.Children[k], currPrefix+string(k))...)
 		}
 	}
-	return objs
+	return movies
 }
 
 func reduceTrieStr(str string) string {

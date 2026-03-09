@@ -34,6 +34,7 @@ func main() {
 	fmt.Println("loading trie")
 	tmdbTrie, err := tmdb.InitTMDBTrie()
 	if err != nil {
+		slog.Error("error while making trie", "error", err)
 		log.Fatal("Trie not generating")
 	}
 

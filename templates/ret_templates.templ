@@ -7,18 +7,18 @@ import (
 	"www.github.com/jkboyo/votefin/internal/trie"
 )
 
-templ SearchList(retMovies []trie.Obj) {
+templ SearchList(retMovies []*trie.Movie) {
 	<div id="foundMovies">
 		for _, obj := range retMovies {
 			<li
-				value={ obj.Val }
-				hx-post={ fmt.Sprintf("/admin/addMovie?movieId=%d", obj.Val) }
+				value={ obj.ID }
+				hx-post={ fmt.Sprintf("/admin/addMovie?movieId=%d", obj.ID) }
 				hx-target="#moviesToVote"
 				hx-swap="beforeend"
 			>
-				{ obj.Str }
+				{ obj.Title }
 			</li>
-			<a href={ fmt.Sprintf("https://www.%s/movie/%d", tmdb.TMDBBaseURL, obj.Val) } target="_blank">Link</a>
+			<a href={ fmt.Sprintf("https://www.%s/movie/%d", tmdb.TMDBBaseURL, obj.ID) } target="_blank">Link</a>
 		}
 	</div>
 }

@@ -34,25 +34,18 @@ func InitTMDBTrie() (*trie.Trie, error) {
 	}
 
 	for scanner.Scan() {
-		newObj := &struct {
-			ID            int     `json:"id"`
-			OriginalTitle string  `json:"original_title"`
-			Popularity    float32 `json:"popularity"`
-		}{}
-		err := json.Unmarshal(scanner.Bytes(), newObj)
+		newMovie := &trie.Movie{}
+		err := json.Unmarshal(scanner.Bytes(), newMovie)
 		if err != nil {
 			return nil, fmt.Errorf("Error unmarshaling: %s", err.Error())
 		}
-		trieObj := trie.Obj{
-			Str:        newObj.OriginalTitle,
-			Val:        newObj.ID,
-			Popularity: newObj.Popularity,
-		}
-		if trieObj.Popularity < float32(popLimit) {
+		if newMovie.Popularity < float32(popLimit) {
 			continue
 		}
-		tmdbTrie.Insert(trieObj)
+		tmdbTrie.Insert(*newMovie)
 	}
 
 	return tmdbTrie, nil
 }
+
+// func GetMovieTrie() error {}
