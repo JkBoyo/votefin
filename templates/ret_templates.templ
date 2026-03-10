@@ -8,7 +8,10 @@ import (
 )
 
 templ SearchList(retMovies []*trie.Movie) {
-	<div id="foundMovies">
+	<ol
+		class="bg-blue-900 rounded-md absolute left-auto top-15 z-10"
+		id="found-movies"
+	>
 		for _, obj := range retMovies {
 			<li
 				value={ obj.ID }
@@ -20,7 +23,7 @@ templ SearchList(retMovies []*trie.Movie) {
 			</li>
 			<a href={ fmt.Sprintf("https://www.%s/movie/%d", tmdb.TMDBBaseURL, obj.ID) } target="_blank">Link</a>
 		}
-	</div>
+	</ol>
 }
 
 templ EmptyDiv() {
@@ -28,6 +31,6 @@ templ EmptyDiv() {
 }
 
 templ AddMovieRet(isAdmin int64, notif string, movie database.Movie) {
-	<div id="foundMovies" hx-swap-oob="true">{ notif }</div>
+	<ol id="foundMovies" hx-swap-oob="true">{ notif }</ol>
 	@Movie(isAdmin, movie)
 }

@@ -22,11 +22,25 @@ templ BasePage(c templ.Component) {
 }
 
 templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
-	<header class="flex justify-between lg:h-[10vh] bg-slate-950  top-0">
+	<header class="flex justify-between lg:h-[10vh] p-3 bg-slate-950  top-0">
 		<div class="text-8xl lg:text-5xl m-4">Votefin</div>
+		<div class="flex relative items-center">
+			if isAdmin == 1 {
+				<input
+					class="border-2 rounded-md p-3  border-blue-950"
+					name="searchMovies"
+					type="text"
+					placeholder="Search movies to add"
+					hx-post="/admin/searchMovies"
+					hx-target="#found-movies"
+					hx-swap="outerHTML"
+				/>
+				<ul class="bg-blue-900 rounded-md absolute left-auto -bottom-full z-10" id="found-movies"></ul>
+			}
+		</div>
 		if user != nil {
 			<form class="flex content-center p-3" action="/logout" method="POST">
-				<button class="bg-blue-950 px-5 py-2 text-4xl lg:text-3xl rounded-md hover:bg-red-950 m-4 cursor-pointer" type="submit">Logout </button>
+				<button class="bg-blue-950 text-auto p-3 rounded-md hover:bg-red-950 cursor-pointer" type="submit">Logout </button>
 			</form>
 		}
 	</header>
@@ -34,21 +48,21 @@ templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetM
 		<div class="">
 			@VotesMovieList(isAdmin, false, votedOnMovies)
 		</div>
-		<div class="">
-			@UserVotesMovieList(false, userVotesLeftCount, userVotedMovies)
-		</div>
 		<div
 			id="moviesToVoteColumn"
 			class="lg:col-span-2 xl:col-span-4"
 		>
 			@MovieList(isAdmin, false, allMovies)
 		</div>
+		<div class="">
+			@UserVotesMovieList(false, userVotesLeftCount, userVotedMovies)
+		</div>
 	</div>
 }
 
 templ VotesMovieList(isAdmin int64, swap bool, votedOnMovies []database.GetMoviesSortedByVotesRow) {
 	<div class="flex justify-between p-2">
-		<h2 class="">Votes</h2>
+		<h2 class="">Server Votes</h2>
 	</div>
 	<ol
 		class="flex lg:flex-col items-center border border-blue-900 rounded-md p-2 overflow-x-auto"
@@ -82,7 +96,7 @@ templ UserVotesMovieList(swap bool, userVotesLeft int, votedOnMovies []database.
 		}
 	>
 		<div class="flex gap-2 justify-between p-2">
-			<h2 class="">User Votes</h2>
+			<h2 class="">My Votes</h2>
 			<h4
 				if userVotesLeft == 0 {
 					class="text-red-900"
@@ -116,19 +130,6 @@ templ UserVotesMovieList(swap bool, userVotesLeft int, votedOnMovies []database.
 templ MovieList(isAdmin int64, swap bool, allMovies []database.Movie) {
 	<div class="grid grid-cols-4 justify-between gap-1 h-auto p-2">
 		<h2 class="col-span-2">Content to Vote On</h2>
-		<div class="col-span-2">
-			if isAdmin == 1 {
-				<input
-					class="border-2 rounded-md border-blue-950"
-					name="searchMovies"
-					type="text"
-					placeholder="Search movies to add"
-					hx-post="/admin/searchMovies"
-					hx-target="#foundMovies"
-				/>
-				<ul class="bg-blue-900 rounded-md absolute left-auto" id="foundMovies"></ul>
-			}
-		</div>
 		<ul
 			class="flex col-span-4 bg-slate-900 lg:grid lg:grid-cols-4 lg:grid-rows-auto border border-blue-900 rounded-md p-2 lg:overflow-y-scroll"
 			id="moviesToVote"
