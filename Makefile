@@ -27,3 +27,6 @@ live/tailwindcss:
 
 live:
 	make -j2 live/templ live/tailwindcss
+
+prod/tailwind:
+	npx @tailwindcss/cli -i ./input.css -o ./assets/styles.css --minify
