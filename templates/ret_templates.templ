@@ -9,19 +9,21 @@ import (
 
 templ SearchList(retMovies []*trie.Movie) {
 	<ol
-		class="bg-blue-900 rounded-md absolute left-auto top-15 z-10"
+		class="absolute top-25 bg-blue-900 rounded-md left-auto text-2xl z-10"
 		id="found-movies"
 	>
 		for _, obj := range retMovies {
-			<li
-				value={ obj.ID }
-				hx-post={ fmt.Sprintf("/admin/addMovie?movieId=%d", obj.ID) }
-				hx-target="#moviesToVote"
-				hx-swap="beforeend"
-			>
-				{ obj.Title }
-			</li>
-			<a href={ fmt.Sprintf("https://www.%s/movie/%d", tmdb.TMDBBaseURL, obj.ID) } target="_blank">Link</a>
+			<div class="border rounded-md border-blue-300">
+				<li
+					value={ obj.ID }
+					hx-post={ fmt.Sprintf("/admin/addMovie?movieId=%d", obj.ID) }
+					hx-target="#moviesToVote"
+					hx-swap="beforeend"
+				>
+					{ obj.Title }
+				</li>
+				<a href={ fmt.Sprintf("https://www.%s/movie/%d", tmdb.TMDBBaseURL, obj.ID) } target="_blank">Link</a>
+			</div>
 		}
 	</ol>
 }

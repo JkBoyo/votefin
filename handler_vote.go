@@ -143,8 +143,8 @@ func updateVotesPage(cfg *apiConfig, r *http.Request, w http.ResponseWriter, use
 
 	respondWithHTML(w, http.StatusAccepted, templ.Join(
 		templates.VotesMovieList(user.IsAdmin, true, votedOnMovies),
-		templates.UserVotesMovieList(true, cfg.voteLimit-int(currUserVotes.Float64), userVotedMovies),
-		templates.MovieList(user.IsAdmin, true, allMovies),
+		templates.UserVotesMovieList(true, userVotedMovies),
+		templates.MovieList(user.IsAdmin, cfg.voteLimit-int(currUserVotes.Float64), true, allMovies),
 		templates.Notification(""),
 	),
 	)

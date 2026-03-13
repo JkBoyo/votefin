@@ -23,11 +23,11 @@ templ BasePage(c templ.Component) {
 
 templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
 	<header class="flex justify-between lg:h-[10vh] p-3 bg-slate-950  top-0">
-		<div class="text-8xl lg:text-5xl m-4">Votefin</div>
+		<div class="text-7xl lg:text-5xl m-4">Votefin</div>
 		<div class="flex relative items-center">
 			if isAdmin == 1 {
 				<input
-					class="border-2 rounded-md p-3  border-blue-950"
+					class="border-2 rounded-md p-3 text-3xl border-blue-950"
 					name="searchMovies"
 					type="text"
 					placeholder="Search movies to add"
@@ -35,37 +35,37 @@ templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetM
 					hx-target="#found-movies"
 					hx-swap="outerHTML"
 				/>
-				<ul class="bg-blue-900 rounded-md absolute left-auto -bottom-full z-10" id="found-movies"></ul>
+				<ul class="bg-blue-900 rounded-md text-4xl absolute left-auto -bottom-full z-10" id="found-movies"></ul>
 			}
 		</div>
 		if user != nil {
-			<form class="flex content-center p-3" action="/logout" method="POST">
-				<button class="bg-blue-950 text-auto p-3 rounded-md hover:bg-red-950 cursor-pointer" type="submit">Logout </button>
+			<form class="flex content-center" action="/logout" method="POST">
+				<button class="inline-flex items-center bg-blue-950 text-3xl my-2 p-3 rounded-md hover:bg-red-950 cursor-pointer" type="submit">Logout </button>
 			</form>
 		}
 	</header>
-	<div class="grid text-6xl lg:text-2xl gap-5 grid-cols-1 lg:h-[89vh] overflow-y-scroll lg:grid-cols-2 xl:grid-cols-6">
-		<div class="">
+	<div class="flex flex-col lg:flex-row text-5xl lg:text-2xl gap-5 p-5 lg:h-[89vh]">
+		<div class="flex flex-col gap-3">
 			@VotesMovieList(isAdmin, false, votedOnMovies)
 		</div>
 		<div
 			id="moviesToVoteColumn"
-			class="lg:col-span-2 xl:col-span-4"
+			class="flex flex-col gap-3"
 		>
-			@MovieList(isAdmin, false, allMovies)
+			@MovieList(isAdmin, userVotesLeftCount, false, allMovies)
 		</div>
-		<div class="">
-			@UserVotesMovieList(false, userVotesLeftCount, userVotedMovies)
+		<div class="flex flex-col gap-3">
+			@UserVotesMovieList(false, userVotedMovies)
 		</div>
 	</div>
 }
 
 templ VotesMovieList(isAdmin int64, swap bool, votedOnMovies []database.GetMoviesSortedByVotesRow) {
 	<div class="flex justify-between p-2">
-		<h2 class="">Server Votes</h2>
+		<h2 class="">All Votes</h2>
 	</div>
 	<ol
-		class="flex lg:flex-col items-center border border-blue-900 rounded-md p-2 overflow-x-auto"
+		class="flex bg-slate-900 lg:flex-col gap-3 border border-blue-900 rounded-md p-2 overflow-x-auto"
 		id="moviesVotedOn"
 		if swap {
 			hx-swap-oob="true"
@@ -88,71 +88,71 @@ templ VotesMovieList(isAdmin int64, swap bool, votedOnMovies []database.GetMovie
 	</ol>
 }
 
-templ UserVotesMovieList(swap bool, userVotesLeft int, votedOnMovies []database.GetMoviesByUserVotesRow) {
-	<div
+templ UserVotesMovieList(swap bool, votedOnMovies []database.GetMoviesByUserVotesRow) {
+	<div class="flex gap-2 lg:justify-end p-2">
+		<h2 class="">My Votes</h2>
+	</div>
+	<ol
 		id="userVotesMovies"
 		if swap {
 			hx-swap-oob="true"
 		}
+		class="flex bg-slate-900 lg:flex-col border border-blue-900 gap-3 rounded-md p-2 overflow-x-auto"
 	>
-		<div class="flex gap-2 justify-between p-2">
-			<h2 class="">My Votes</h2>
-			<h4
-				if userVotesLeft == 0 {
-					class="text-red-900"
-				} else {
-					class=""
-				}
-				id="currUserVotes"
-			>Votes Left: { userVotesLeft }</h4>
-		</div>
-		<ol
-			class="flex lg:flex-col border items-center border-blue-900 rounded-md p-2 overflow-x-auto"
-		>
-			if len(votedOnMovies) < 1 {
-				@NoMovies()
-			} else {
-				{{ displayedMovies := 0 }}
-				for _, movie := range votedOnMovies {
-					if movie.VoteCount > 0 {
-						@userVotedMovie(movie)
-						{{ displayedMovies += 1 }}
-					}
-				}
-				if displayedMovies == 0 {
-					@NoMovies()
+		if len(votedOnMovies) < 1 {
+			@NoMovies()
+		} else {
+			{{ displayedMovies := 0 }}
+			for _, movie := range votedOnMovies {
+				if movie.VoteCount > 0 {
+					@userVotedMovie(movie)
+					{{ displayedMovies += 1 }}
 				}
 			}
-		</ol>
-	</div>
+			if displayedMovies == 0 {
+				@NoMovies()
+			}
+		}
+	</ol>
 }
 
-templ MovieList(isAdmin int64, swap bool, allMovies []database.Movie) {
-	<div class="flex flex-col lg:grid lg:grid-cols-4 lg:justify-between gap-1 h-auto p-5">
-		<h2 class="col-span-2">Content to Vote On</h2>
-		<ul
-			class="flex col-span-6 bg-slate-900 lg:grid lg:grid-cols-5 lg:grid-rows-auto border border-blue-900 rounded-md p-2 sm:overflow-scroll lg:overflow-y-scroll"
-			id="moviesToVote"
+templ MovieList(isAdmin int64, userVotesLeft int, swap bool, allMovies []database.Movie) {
+	<div class="flex justify-between p-2">
+		<h2 class="col-span-2">Available Movies</h2>
+		<h4
 			if swap {
 				hx-swap-oob="true"
 			}
-		>
-			if len(allMovies) < 1 {
-				@NoMovies()
+			if userVotesLeft == 0 {
+				class="text-red-900"
 			} else {
-				{{ displayedMovies := 0 }}
-				for _, movie := range allMovies {
-					if movie.Status != "on server" {
-						@Movie(isAdmin, movie)
-						{{ displayedMovies += 1 }}
-					}
-				}
-				if displayedMovies == 0 {
-					@NoMovies()
+				class=""
+			}
+			id="currUserVotes"
+		>Votes Left: { userVotesLeft }</h4>
+	</div>
+	<ul
+		class="flex bg-slate-900 lg:flex-wrap border border-blue-900 gap-3 place-content-evenly rounded-md p-2 overflow-x-auto lg:overflow-y-scroll"
+		id="moviesToVote"
+		if swap {
+			hx-swap-oob="true"
+		}
+	>
+		if len(allMovies) < 1 {
+			@NoMovies()
+		} else {
+			{{ displayedMovies := 0 }}
+			for _, movie := range allMovies {
+				if movie.Status != "on server" {
+					@Movie(isAdmin, movie)
+					{{ displayedMovies += 1 }}
 				}
 			}
-		</ul>
-	</div>
+			if displayedMovies == 0 {
+				@NoMovies()
+			}
+		}
+	</ul>
 }
 
 templ NoMovies() {
@@ -196,7 +196,7 @@ templ userVotedMovie(m database.GetMoviesByUserVotesRow) {
 }
 
 templ movieCard(voteCount int64, movie database.Movie) {
-	<li class="flex p-5">
+	<li class="flex p-auto">
 		<div class="flex flex-col rounded-md border-2 w-80 lg:w-60 border-blue-900 bg-gray-800">
 			<a class="flex flex-col items-center pb-2 " href={ movie.TmdbUrl } target="_blank">
 				<div class="p-3 relative w-full">
