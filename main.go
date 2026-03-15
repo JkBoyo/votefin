@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"log/slog"
@@ -26,11 +27,20 @@ type apiConfig struct {
 }
 
 func main() {
-	fmt.Println("fetching env data")
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(".env not loading")
+	isDev := os.Getenv("DEV_MODE")
+
+	if isDev == "" || isDev == "DEV" {
+		fmt.Println("fetching env data")
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal(".env not loading")
+		}
 	}
+	err := checkEnvVars()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	fmt.Println("loading trie")
 	tmdbTrie, err := tmdb.InitTMDBTrie()
 	if err != nil {
@@ -123,4 +133,21 @@ func disableCacheInDevMode(next http.Handler) http.Handler {
 		w.Header().Set("Cache-Control", "no-store")
 		next.ServeHTTP(w, r)
 	})
+}
+
+func checkEnvVars() error {
+	envVars := []string{"VOTE_LIMIT", "SECURE_ONLY_COOKIE", "SERVER_ID", "JELLYFIN_URL", "TMDB_API_KEY", "POSTER_IM_WIDTH", "POPULARITY_LIMIT"}
+	varMissing := false
+	for _, envVarTitle := range envVars {
+		envVar := os.Getenv(envVarTitle)
+		if envVar == "" {
+			slog.Error("missing variable", "name", envVarTitle)
+			varMissing = true
+		}
+	}
+	if varMissing == true {
+		return errors.New("Env not complete")
+	}
+
+	return nil
 }
