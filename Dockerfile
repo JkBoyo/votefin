@@ -1,6 +1,4 @@
-FROM golang:1.25.1-alpine3.22 AS build
-
-RUN apk add --no-cache gcc musl-dev sqlite-dev
+FROM golang:1.25.1 AS build
 
 WORKDIR /app
 
@@ -10,12 +8,16 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=1 GOOS=linux go build -o votefin ./main.go
+RUN CGO_ENABLED=1 GOOS=linux go build -o votefin .
 
+FROM alpine:3.23.3 AS prod
 
+WORKDIR /app
 
-# FROM alpine:stable-slim
-#
-# COPY votefin /bin/votefin
-#
-# CMD ["/bin/votefin"]
+COPY --from=build /app/votefin .
+COPY --from=build /app/assets/styles.css ./assets/styles.css
+COPY --from=build /app/data/ ./assets/data/
+
+EXPOSE 8080
+# CMD ["./votefin"]
+

@@ -1,6 +1,15 @@
+#Folders
+./assets/images/
+node_modules/
+tmp/
+.git/
+
+#Files
+.dockerignore
 .env
-node_modules
+.example.env
+.gitignore
 package-lock.json
 package.json
-tmp
+*.templ
 
