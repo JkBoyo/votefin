@@ -1,0 +1,18 @@
+services:
+  votefin:
+    build:
+      context: .
+      target: prod
+    environment:
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      JELLYFIN_URL: ${JELLYFIN_URL}
+      SERVER_ID: ${SERVER_ID}
+      POPULARITY_LIMIT: ${POPULARITY_LIMIT}
+      VOTE_LIMIT: ${VOTE_LIMIT} 
+      POSTER_IM_WIDTH: ${POSTER_IM_WIDTH} 
+      SECURE_ONLY_COOKIE: ${SECURE_ONLY_COOKIE} 
+    volumes:
+      - ./assets/:/app/assets/
+      - ./data/:/app/data/
+    ports:
+      - "8080:8080"

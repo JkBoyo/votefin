@@ -49,7 +49,7 @@ func main() {
 	}
 
 	fmt.Println("opening db")
-	db, err := sql.Open("sqlite3", "./votefin.db")
+	db, err := sql.Open("sqlite3", "./data/votefin.db")
 	if err != nil {
 		fmt.Println("Error with DB", err)
 	}

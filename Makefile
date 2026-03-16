@@ -1,16 +1,16 @@
-include .env
+DB_PATH=../../data/votefin.db
 
 dev-db-reset:
 	cd ./sql/schema/ &&  \
-	goose sqlite3 ${DB_PATH} reset
+	goose sqlite3 $(DB_PATH) reset
 
 dev-db-up:
 	cd ./sql/schema/ && \
-	goose sqlite3 ${DB_PATH} up
+	goose sqlite3 $(DB_PATH) up
 
 dev-db-down:
 	cd ./sql/schema/ && \
-	goose sqlite3 ${DB_PATH} down
+	goose sqlite3 $(DB_PATH) down
 
 dev-db-fr: dev-db-reset dev-db-up
 
@@ -24,9 +24,6 @@ live/templ:
 
 live/tailwindcss:
 	npx @tailwindcss/cli -i ./input.css -o ./assets/styles.css --watch
-
-live:
-	make -j2 live/templ live/tailwindcss
 
 prod/tailwind:
 	npx @tailwindcss/cli -i ./input.css -o ./assets/styles.css --minify
