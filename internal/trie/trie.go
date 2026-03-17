@@ -28,7 +28,7 @@ type Obj struct {
 
 type Movie struct {
 	Title      string  `json:"original_title"`
-	ID         int     `json:"id"`
+	ID         int32   `json:"id"`
 	Popularity float32 `json:"popularity"`
 }
 
@@ -104,13 +104,14 @@ func searchLevel(currNode *trieNode, currPrefix string) []*Movie {
 	return movies
 }
 
+var stopWords = []string{"the", "and", "of", ":", "'", ","}
+
 func reduceTrieStr(str string) string {
 	lowerStr := strings.ToLower(str)
 	spaceLessStr := strings.ReplaceAll(lowerStr, " ", "")
 	stopWordLessStr := spaceLessStr
 	// Remove all stop words defined in this list
 	// Stop words need to use regex to make sure things are correctly
-	stopWords := []string{"the", "and", "of", ":"}
 	for _, word := range stopWords {
 		stopWordLessStr = strings.ReplaceAll(stopWordLessStr, word, "")
 	}
