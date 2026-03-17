@@ -5,3 +5,4 @@ assets/movie_ids_*
 assets/static/images/*
 web/
 node_modules
+./data/movie_ids_*

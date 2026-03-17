@@ -1,8 +1,10 @@
 package tmdb
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -40,7 +42,7 @@ func GetTMDBDataFP() (string, error) {
 			currentMovieDataDate = fileDate
 		}
 	}
-	if currentMovieDataDate.Before(today.Add(-time.Hour*24*7)) || movieIdFileCount == 0 {
+	if currentMovieDataDate.Before(today.AddDate(0, 0, -7)) || movieIdFileCount == 0 {
 		err = downloadCurrentTMDBIDFile(today)
 		if err != nil {
 			return "", err
@@ -54,30 +56,61 @@ func GetTMDBDataFP() (string, error) {
 }
 
 func downloadCurrentTMDBIDFile(today time.Time) error {
-	yesterday := today.Add(time.Hour * 24)
-	currIdFileName := fmt.Sprintf("movie_ids_%d_%d_%d.json.gz",
+	yesterday := today.AddDate(0, 0, -1)
+	currIdFileName := fmt.Sprintf("movie_ids_%02d_%d_%d.json",
 		int(yesterday.Month()),
 		yesterday.Day(),
 		yesterday.Year(),
 	)
-	currIdUrl := "https://files.tmdb.org/p/exports/" + currIdFileName
+	currIdUrl := "https://files.tmdb.org/p/exports/" + currIdFileName + ".gz"
 	resp, err := http.DefaultClient.Get(currIdUrl)
 	if err != nil {
 		return err
 	}
-
-	dat, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		slog.Info("Request failed", "url", resp.Request.URL)
+		return fmt.Errorf("Response failed with status: %s", resp.Status)
 	}
 
 	idFileFP := "./data/" + currIdFileName
+	idFileFPgz := idFileFP + ".gz"
 
-	err = os.WriteFile(idFileFP, dat, 0644)
+	tempFile, err := os.Create(idFileFPgz)
+	if err != nil {
+		return err
+	}
+	defer tempFile.Close()
+
+	_, err = io.Copy(tempFile, resp.Body)
 	if err != nil {
 		return err
 	}
 
+	gzFile, err := os.Open(idFileFPgz)
+	if err != nil {
+		return err
+	}
+	defer gzFile.Close()
+
+	reader, err := gzip.NewReader(gzFile)
+	if err != nil {
+		return err
+	}
+	defer reader.Close()
+
+	finalFile, err := os.Create(idFileFP)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(finalFile, reader)
+	if err != nil {
+		return err
+	}
+	err = os.Remove(idFileFPgz)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -86,8 +119,8 @@ func getTMDBIDFileDate(fileInfo os.FileInfo) (time.Time, error) {
 	trimmedString := strings.TrimSuffix(prefixLessString, ".json")
 
 	fileDate, err := time.Parse(
-		trimmedString,
 		"01_02_2006",
+		trimmedString,
 	)
 	return fileDate, err
 }
