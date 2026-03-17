@@ -12,6 +12,9 @@ templ SearchList(retMovies []*trie.Movie) {
 		class="absolute top-25 bg-blue-900 rounded-md left-auto text-2xl z-10"
 		id="found-movies"
 	>
+		if len(retMovies) == 0 {
+			<li>No Movies Found</li>
+		}
 		for _, obj := range retMovies {
 			<div class="border rounded-md border-blue-300">
 				<li
@@ -29,10 +32,10 @@ templ SearchList(retMovies []*trie.Movie) {
 }
 
 templ EmptyDiv() {
-	<div id="foundMovies"></div>
+	<div id="found-movies"></div>
 }
 
 templ AddMovieRet(isAdmin int64, notif string, movie database.Movie) {
-	<ol id="foundMovies" hx-swap-oob="true">{ notif }</ol>
+	<ol id="found-movies" hx-swap-oob="true">{ notif }</ol>
 	@Movie(isAdmin, movie)
 }
