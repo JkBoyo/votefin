@@ -14,14 +14,15 @@ import (
 func InitTMDBTrie() (*trie.Trie, error) {
 	tmdbTrie := trie.NewTrie()
 
-	tmdbDataFP := "./data/movie_ids_08_30_2025.json"
+	movieInfoFP, err := GetTMDBDataFP()
+	if err != nil {
+		return nil, err
+	}
 
-	tmdbData, err := os.Open(tmdbDataFP)
-
+	tmdbData, err := os.Open(movieInfoFP)
 	if err != nil {
 		return nil, errors.New("error opening TMDB DATA file")
 	}
-
 	defer tmdbData.Close()
 
 	scanner := bufio.NewScanner(tmdbData)
@@ -47,5 +48,3 @@ func InitTMDBTrie() (*trie.Trie, error) {
 
 	return tmdbTrie, nil
 }
-
-// func GetMovieTrie() error {}
