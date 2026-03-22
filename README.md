@@ -63,6 +63,8 @@ Once it is installed you simply have to run the db creation command `make dev-db
 
 From there you should be able to login with your jellyfin admin login. As admin you can add any movies that you want people to vote on using the top search bar.
 
+![Admin view](./.github/admin-view.png "Admin View")
+
 Once the movies are added any jellyfin user you have can login and vote for their picks! 
 
 Once you have the movies added on the server you can go to votefin and mark on server and it will clear all the votes and remove the movie from voting.
