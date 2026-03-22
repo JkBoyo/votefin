@@ -113,11 +113,14 @@ func (cfg *apiConfig) AuthorizeMiddleWare(next http.Handler) http.Handler {
 		token := cookie.Value
 		if token == "" {
 			fmt.Println("No token in the cookie")
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
 		}
 
 		jfUser, err := jellyfin.ValidateToken(token)
 		if err != nil {
 			fmt.Println("Error validating token")
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 

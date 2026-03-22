@@ -4,6 +4,18 @@ This is a free and open source server that I made so my Jellyfin users could hel
 
 It integrates with your jellyfin server and tmdb so that you can easily have your users vote and make your decisions for you.
 
+## Motivation
+
+I made this project because I had a pile of media I needed to prepare for my [Jellyfin](https://jellyfin.org) server and I had no idea where I wanted to start.
+
+So to fix this I decided to approach this project using the go I learned from [Boot.Dev](https://boot.dev) and the [HTMX](https://htmx.org) library to create a voting application simplifying my decision!
+
+## Implementation and Demo
+
+To make this simple for my users I utilized the Jellyfin API to let my users use the same login information because it's just bounced against Jellyfin.
+
+My Votefin instance is [here](https://votefin.heffstech.com) and you can login to see the voting page using the username `test` and the password `password`.
+
 ## Installation
 
 Build the server from source. Thankfully golang makes this process extremely simple.
