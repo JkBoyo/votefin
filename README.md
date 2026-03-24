@@ -68,3 +68,7 @@ From there you should be able to login with your jellyfin admin login. As admin 
 Once the movies are added any jellyfin user you have can login and vote for their picks! 
 
 Once you have the movies added on the server you can go to votefin and mark on server and it will clear all the votes and remove the movie from voting.
+
+## Contributing
+
+To contribute to the project clone down the repo and work on the code and build the project following the example from above.
