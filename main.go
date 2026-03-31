@@ -94,7 +94,7 @@ func main() {
 	serveMux.Handle("POST /vote", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.voteHandler)))
 	serveMux.Handle("POST /removeVote", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.voteRemovalHandler)))
 
-	serveMux.Handle("GET /login", *templ.Handler(templates.BasePage(templates.Login())))
+	serveMux.Handle("GET /login", *templ.Handler(templates.BasePage(templates.Login(nil))))
 	serveMux.Handle("GET /dashboard", apiConf.AuthorizeMiddleWare(http.HandlerFunc(apiConf.renderPageHandler)))
 
 	serveMux.Handle("/assets/", disableCacheInDevMode(

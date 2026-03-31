@@ -39,7 +39,7 @@ func (cfg *apiConfig) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	authResp, err := jellyfin.AuthenticateUser(userName, passWord, r.Context())
 	if err == jellyfin.JellyfinAuthError {
-		respondWithHTML(w, http.StatusAccepted, templates.Notification("Invalid username or password"))
+		respondWithHTML(w, http.StatusAccepted, templates.Login(templates.Notification("Invalid username or password")))
 		slog.Warn("invalid username or password entered")
 		return
 	} else if err != nil {

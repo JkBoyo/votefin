@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Login() templ.Component {
+func Login(notif templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,17 @@ func Login() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col place-content-center gap-80 items-center h-screen\"><h1 class=\"text-8xl\">Votefin</h1><form class=\"flex flex-col text-4xl p-8 px-15 w-2/3 xl:w-1/3 border-2 border-blue-950 bg-gray-900 rounded-md gap-12\" method=\"post\" action=\"/login\"><div class=\"flex flex-col gap-7\"><label for=\"Username\">User Name</label> <input class=\"border rounded-md text-3xl p\" type=\"text\" id=\"Username\" name=\"Username\"> <label for=\"Password\">Password</label> <input class=\"border rounded-md text-3xl p\" type=\"password\" id=\"Password\" name=\"Password\"></div><input class=\"py-2 bg-blue-950\" type=\"submit\" value=\"Login\"></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col place-content-center gap-80 items-center h-screen\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if notif != nil {
+			templ_7745c5c3_Err = notif.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<h1 class=\"text-8xl\">Votefin</h1><form class=\"flex flex-col text-4xl p-8 px-15 w-2/3 xl:w-1/3 border-2 border-blue-950 bg-gray-900 rounded-md gap-12\" hx-boost=\"true\" method=\"post\" action=\"/login\"><div class=\"flex flex-col gap-7\"><label for=\"Username\">User Name</label> <input class=\"border rounded-md text-3xl p\" type=\"text\" id=\"Username\" name=\"Username\"> <label for=\"Password\">Password</label> <input class=\"border rounded-md text-3xl p\" type=\"password\" id=\"Password\" name=\"Password\"></div><input class=\"py-2 bg-blue-950\" type=\"submit\" value=\"Login\"></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
