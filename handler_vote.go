@@ -40,7 +40,7 @@ func (cfg *apiConfig) voteHandler(w http.ResponseWriter, r *http.Request) {
 
 	currUserVotes, err = updateVotes(r, user, cfg, currUserVotes, movieId, +1)
 
-	updateVotesPage(cfg, r, w, user, currUserVotes)
+	updateVotesColumns(cfg, r, w, user, currUserVotes)
 }
 
 func (cfg *apiConfig) voteRemovalHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +73,7 @@ func (cfg *apiConfig) voteRemovalHandler(w http.ResponseWriter, r *http.Request)
 
 	currUserVotes, err = updateVotes(r, user, cfg, currUserVotes, movieId, -1)
 
-	updateVotesPage(cfg, r, w, user, currUserVotes)
+	updateVotesColumns(cfg, r, w, user, currUserVotes)
 }
 
 func updateVotes(r *http.Request, user *database.User, cfg *apiConfig, currUserVotes sql.NullFloat64, movie string, change int64) (sql.NullFloat64, error) {
@@ -122,6 +122,30 @@ func updateVotes(r *http.Request, user *database.User, cfg *apiConfig, currUserV
 	}
 }
 
+func updateVotesColumns(cfg *apiConfig, r *http.Request, w http.ResponseWriter, user *database.User, currUserVotes sql.NullFloat64) {
+	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
+	if err != nil {
+		slog.Error("Error getting movies sorted by votes", "error", err)
+		return
+	}
+
+	userVotedMovies, err := cfg.db.GetMoviesByUserVotes(r.Context(), user.ID)
+	if err != nil {
+		slog.Error("Error getting user voted movies sorted by votes", "error", err)
+		return
+	}
+
+	userVotesLeft := cfg.voteLimit - int(currUserVotes.Float64)
+
+	respondWithHTML(w, http.StatusAccepted, templ.Join(
+		templates.VotesMovieList(user.IsAdmin, true, votedOnMovies),
+		templates.UserVotesMovieList(true, userVotedMovies),
+		templates.VotesLeft(true, userVotesLeft),
+		templates.Notification(""),
+	),
+	)
+}
+
 func updateVotesPage(cfg *apiConfig, r *http.Request, w http.ResponseWriter, user *database.User, currUserVotes sql.NullFloat64) {
 	votedOnMovies, err := cfg.db.GetMoviesSortedByVotes(r.Context())
 	if err != nil {
@@ -141,10 +165,12 @@ func updateVotesPage(cfg *apiConfig, r *http.Request, w http.ResponseWriter, use
 		return
 	}
 
+	userVotesLeft := cfg.voteLimit - int(currUserVotes.Float64)
+
 	respondWithHTML(w, http.StatusAccepted, templ.Join(
 		templates.VotesMovieList(user.IsAdmin, true, votedOnMovies),
 		templates.UserVotesMovieList(true, userVotedMovies),
-		templates.MovieList(user.IsAdmin, cfg.voteLimit-int(currUserVotes.Float64), true, allMovies),
+		templates.MovieList(user.IsAdmin, userVotesLeft, true, allMovies),
 		templates.Notification(""),
 	),
 	)

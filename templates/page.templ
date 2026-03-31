@@ -116,7 +116,7 @@ templ UserVotesMovieList(swap bool, votedOnMovies []database.GetMoviesByUserVote
 	</ol>
 }
 
-templ MovieList(isAdmin int64, userVotesLeft int, swap bool, allMovies []database.Movie) {
+templ VotesLeft(swap bool, userVotesLeft int) {
 	<div class="flex justify-between p-2">
 		<h2 class="col-span-2">Available Movies</h2>
 		<h4
@@ -131,6 +131,10 @@ templ MovieList(isAdmin int64, userVotesLeft int, swap bool, allMovies []databas
 			id="currUserVotes"
 		>Votes Left: { userVotesLeft }</h4>
 	</div>
+}
+
+templ MovieList(isAdmin int64, userVotesLeft int, swap bool, allMovies []database.Movie) {
+	@VotesLeft(swap, userVotesLeft)
 	<ul
 		class="flex bg-slate-900 lg:flex-wrap border border-blue-900 gap-3 place-content-evenly rounded-md p-2 overflow-x-auto lg:overflow-y-scroll"
 		id="moviesToVote"

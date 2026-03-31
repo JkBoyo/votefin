@@ -58,6 +58,7 @@ func renderPage(cfg *apiConfig, r *http.Request, user *database.User) (templ.Com
 	userVotesCount, err := cfg.db.GetVotesCountPerUser(r.Context(), user.ID)
 	if err != nil {
 		fmt.Println("get votecount failed: " + err.Error())
+		return nil, fmt.Errorf("Error fetching user vote count: %v", err.Error())
 	}
 
 	userVotesLeft := cfg.voteLimit - int(userVotesCount.Float64)
