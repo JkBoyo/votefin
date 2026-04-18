@@ -6,3 +6,4 @@ assets/static/images/*
 web/
 node_modules
 data/movie_ids_*
+votefin
