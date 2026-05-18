@@ -39,7 +39,7 @@ func Login(notif templ.Component) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><input class=\"py-2 bg-blue-950\" type=\"submit\" value=\"Login\"></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><input class=\"py-2 bg-blue-950 cursor-pointer\" type=\"submit\" value=\"Login\"></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -57,7 +57,7 @@ func GetTMDBDataFP() (string, error) {
 
 func downloadCurrentTMDBIDFile(today time.Time) error {
 	yesterday := today.AddDate(0, 0, -1)
-	currIdFileName := fmt.Sprintf("movie_ids_%02d_%d_%d.json",
+	currIdFileName := fmt.Sprintf("movie_ids_%02d_%02d_%d.json",
 		int(yesterday.Month()),
 		yesterday.Day(),
 		yesterday.Year(),
