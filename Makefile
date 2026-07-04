@@ -2,15 +2,15 @@ DB_PATH=../../data/votefin.db
 
 dev-db-reset:
 	cd ./sql/schema/ &&  \
-	goose sqlite3 $(DB_PATH) reset
+	goose sqlite3 ./data/votefin.db reset
 
 dev-db-up:
 	cd ./sql/schema/ && \
-	goose sqlite3 $(DB_PATH) up
+	goose sqlite3 ./data/votefin.db up
 
 dev-db-down:
 	cd ./sql/schema/ && \
-	goose sqlite3 $(DB_PATH) down
+	goose sqlite3 ./data/votefin.db down
 
 dev-db-fr: dev-db-reset dev-db-up
 
