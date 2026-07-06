@@ -29,7 +29,7 @@ func Login(notif templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col place-content-center gap-80 items-center h-screen\"><h1 class=\"text-8xl\">Votefin</h1><form class=\"flex flex-col text-4xl p-8 px-15 w-2/3 xl:w-1/3 border-2 border-blue-950 bg-gray-900 rounded-md gap-12\" hx-boost=\"true\" method=\"post\" action=\"/login\"><div class=\"flex flex-col gap-7\"><label for=\"Username\">User Name</label> <input class=\"border border-blue-700 rounded-md text-3xl p\" type=\"text\" id=\"Username\" name=\"Username\"> <label for=\"Password\">Password</label> <input class=\"border border-blue-700 rounded-md text-3xl p\" type=\"password\" id=\"Password\" name=\"Password\"> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col place-content-center items-center gap-12 h-screen\"><img class=\"w-2/3 xl:w-1/3 \" src=\"/assets/static/title.svg\" alt=\"Votefin Title\"><form class=\"flex flex-col text-4xl p-8 px-15 w-2/3 xl:w-1/3 border-2 border-blue-950 bg-gray-900 rounded-md gap-12\" hx-boost=\"true\" method=\"post\" action=\"/login\"><div class=\"flex flex-col gap-7\"><label for=\"Username\">User Name</label> <input class=\"border border-blue-700 rounded-md text-3xl p\" type=\"text\" id=\"Username\" name=\"Username\"> <label for=\"Password\">Password</label> <input class=\"border border-blue-700 rounded-md text-3xl p\" type=\"password\" id=\"Password\" name=\"Password\"> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
