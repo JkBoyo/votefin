@@ -12,6 +12,21 @@ templ BasePage(c templ.Component) {
 			<meta charset="UTF-8"/>
 			<title>Votefin</title>
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
+			<script>
+				function filterMovies(searchText) {
+				const query = searchText.toLowerCase().trim();
+				const items = document.querySelectorAll('#moviesToVote li');
+
+				items.forEach(item => {
+					const itemTitle = item.querySelector('#title').textContent.toLowerCase();
+					if (itemTitle.includes(query)) {
+						item.hidden = false;
+					} else {
+						item.hidden = true;
+					}
+				})
+				}
+			</script>
 			<link rel="stylesheet" type="text/css" href="./assets/styles.css"/>
 			<link rel="icon" type="image/svg+xml" href="/assets/static/logo.svg"/>
 		</head>
@@ -23,9 +38,9 @@ templ BasePage(c templ.Component) {
 }
 
 templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetMoviesSortedByVotesRow, userVotesLeftCount int, userVotedMovies []database.GetMoviesByUserVotesRow, allMovies []database.Movie) {
-	<header class="flex justify-between lg:h-[10vh] p-3 px-8 bg-slate-950  top-0">
+	<header class="flex gap-6 justify-between lg:h-[10vh] p-3 px-8 bg-slate-950  top-0">
 		<img src="/assets/static/title.svg" alt="Votefin Title Logo"/>
-		<div class="flex relative items-center">
+		<div class="flex flex-col gap-3 relative items-center lg:flex-row">
 			if isAdmin == 1 {
 				<input
 					class="border-2 rounded-md p-3 text-3xl border-blue-950"
@@ -38,6 +53,13 @@ templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetM
 				/>
 				<ul class="bg-blue-900 rounded-md text-4xl absolute left-auto -bottom-full z-10" id="found-movies"></ul>
 			}
+			<input
+				class=" flex-auto border-2 rounded-md p-3 text-3xl border-blue-950"
+				name="filterMovies"
+				type="text"
+				placeholder="filter movies"
+				onkeyup="filterMovies(this.value)"
+			/>
 		</div>
 		if user != nil {
 			<form class="flex content-center" action="/logout" method="POST">
@@ -51,7 +73,7 @@ templ VotePage(user *database.User, isAdmin int64, votedOnMovies []database.GetM
 		</div>
 		<div
 			id="moviesToVoteColumn"
-			class="flex flex-col gap-3"
+			class="flex flex-auto flex-col gap-3"
 		>
 			@MovieList(isAdmin, userVotesLeftCount, false, allMovies)
 		</div>
@@ -212,7 +234,7 @@ templ movieCard(voteCount int64, movie database.Movie) {
 						</div>
 					}
 				</div>
-				<h4 class="text-4xl lg:text-2xl text-center">{ movie.Title } </h4>
+				<h4 id="title" class="text-4xl lg:text-2xl text-center">{ movie.Title } </h4>
 			</a>
 			<div class="flex w-full gap-2 flex-col p-3 mt-auto items-center">
 				{ children... }
